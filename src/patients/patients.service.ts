@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GpService } from 'src/gp/gp.service';
 import { Repository } from 'typeorm';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
@@ -10,10 +11,35 @@ export class PatientsService {
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
+    private readonly gpService: GpService,
   ) {}
 
-  create(createPatientDto: CreatePatientDto) {
-    return this.patientRepository.save(createPatientDto);
+  async create(createPatientDto: CreatePatientDto) {
+    const gp = await this.gpService.findOne(createPatientDto.gpId);
+
+    if (!gp)
+      throw new HttpException(
+        'This GP surgery does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+
+    if (await this.isNhsNumberInUse(createPatientDto.id))
+      throw new HttpException(
+        'This NHS number is already in use',
+        HttpStatus.CONFLICT,
+      );
+
+    const patient = this.patientRepository.create(createPatientDto);
+
+    patient.generalPractioner = gp;
+
+    return patient.save();
+  }
+
+  async isNhsNumberInUse(id: string) {
+    return await this.patientRepository.findOneBy({
+      id,
+    });
   }
 
   findAll() {
@@ -25,6 +51,7 @@ export class PatientsService {
       where: {
         id,
       },
+      relations: ['generalPractioner'],
     });
 
     if (!patient)
