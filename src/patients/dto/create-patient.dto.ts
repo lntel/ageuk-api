@@ -1,4 +1,4 @@
-import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray } from 'class-validator';
+import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray, IsInt,  } from 'class-validator';
 import { Type } from 'class-transformer';
 class ReferralDto {
   @IsDefined()
@@ -74,9 +74,12 @@ export class CreatePatientDto {
   startDate: Date;
 
   @IsDefined()
+  @IsInt()
+  gpId: number;
+
+  @IsDefined()
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => ReferralDto)
   referral: ReferralDto;
 }
-
