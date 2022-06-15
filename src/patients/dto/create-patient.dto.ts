@@ -1,25 +1,46 @@
-import { IsString, Matches, IsOptional, IsDateString } from 'class-validator';
+import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+class ReferralDto {
+  @IsDefined()
+  @IsDateString()
+  date: Date;
 
-export class CreatePatientDto {
   @IsString()
   firstName: string;
-
-  @IsOptional()
-  @IsString()
-  middleNames: string;
 
   @IsString()
   surname: string;
 
+  @IsOptional()
+  @IsString()
+  organisation: string;
+}
+export class CreatePatientDto {
+  @IsDefined()
+  @IsString()
+  firstName: string;
+
+  @IsOptional()
+  @IsDefined()
+  @IsString()
+  middleNames: string;
+
+  @IsDefined()
+  @IsString()
+  surname: string;
+
+  @IsDefined()
   @IsString()
   addressLine: string;
 
+  @IsDefined()
   @IsString()
   county: string;
 
+  @IsDefined()
   @Matches(
     new RegExp(
-      /^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/g,
+      /^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/,
     ),
     {
       message: 'This postcode is not a valid UK postcode',
@@ -27,9 +48,18 @@ export class CreatePatientDto {
   )
   postcode: string;
 
+  @IsDefined()
   @IsString()
   prognosis: string;
 
+  @IsDefined()
   @IsDateString()
   startDate: Date;
+
+  @IsDefined()
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => ReferralDto)
+  referral: ReferralDto;
 }
+
