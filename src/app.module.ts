@@ -6,8 +6,9 @@ import { PatientsModule } from './patients/patients.module';
 import { Patient } from './patients/entities/patient.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { Diagnosis } from './patients/entities/diagnosis.entity';
 import { Referral } from './patients/entities/referral.entity';
+import { GP } from './gp/entities/gp.entity';
+import { GpModule } from './gp/gp.module';
 
 @Module({
   imports: [
@@ -24,9 +25,10 @@ import { Referral } from './patients/entities/referral.entity';
       username: 'postgres',
       password: 'root',
       database: 'ageuk',
-      entities: [Staff, Patient, Diagnosis, Referral],
+      entities: [Staff, Patient, Referral, GP],
       synchronize: true,
     }),
+    GpModule,
   ],
   providers: [
     {
