@@ -1,4 +1,4 @@
-import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested } from 'class-validator';
+import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 class ReferralDto {
   @IsDefined()
@@ -49,6 +49,10 @@ export class CreatePatientDto {
   @IsDefined()
   @IsString()
   county: string;
+
+  @IsDefined()
+  @IsArray()
+  diagnoses: string[];
 
   @IsDefined()
   @Matches(

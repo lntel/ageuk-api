@@ -1,5 +1,5 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { Diagnosis } from './diagnosis.entity';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { GP } from './gp.entity';
 import { Referral } from './referral.entity';
 
 @Entity()
@@ -34,9 +34,12 @@ export class Patient {
   @Column({ default: 'Weeks' })
   prognosis: string;
 
+  @Column('text', { array: true })
+  diagnoses: string[];
+
+  @ManyToOne(() => GP, (gp) => gp.patients)
+  generalPractioner: GP;
+
   @OneToOne(() => Referral, (referral) => referral.patient)
   referral: Referral;
-
-  @OneToMany(() => Diagnosis, (diagnosis) => diagnosis.patient)
-  diagnoses: Diagnosis[];
 }
