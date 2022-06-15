@@ -19,7 +19,7 @@ export class PatientsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.patientsService.findOne(+id);
+    return this.patientsService.findOne(id);
   }
 
   @Patch(':id')
@@ -29,6 +29,6 @@ export class PatientsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.patientsService.remove(+id);
+    return this.patientsService.remove(id);
   }
 }

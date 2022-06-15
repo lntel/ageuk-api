@@ -20,7 +20,7 @@ export class PatientsService {
     return this.patientRepository.find({});
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const patient = await this.patientRepository.findOne({
       where: {
         id,
@@ -40,7 +40,7 @@ export class PatientsService {
     return `This action updates a #${id} patient`;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const patient = await this.findOne(id);
 
     return this.patientRepository.remove([patient]);

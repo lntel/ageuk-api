@@ -16,6 +16,14 @@ class ReferralDto {
   organisation: string;
 }
 export class CreatePatientDto {
+  @IsDefined({
+    message: 'You must enter an NHS number',
+  })
+  @Matches(new RegExp(/^[0-9]{10}$/), {
+    message: 'You have enter an invalid NHS number',
+  })
+  id: string;
+
   @IsDefined()
   @IsString()
   firstName: string;
@@ -33,6 +41,11 @@ export class CreatePatientDto {
   @IsString()
   addressLine: string;
 
+  @IsDefined()
+  @IsString()
+  city: string;
+
+  @IsOptional()
   @IsDefined()
   @IsString()
   county: string;

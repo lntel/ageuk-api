@@ -1,11 +1,11 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Diagnosis } from './diagnosis.entity';
 import { Referral } from './referral.entity';
 
 @Entity()
 export class Patient {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
   startDate: Date;
@@ -23,6 +23,9 @@ export class Patient {
   addressLine: string;
 
   @Column()
+  city: string;
+
+  @Column({ default: 'Northamptonshire' })
   county: string;
 
   @Column()
