@@ -23,8 +23,11 @@ export class PatientsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
-    return this.patientsService.update(+id, updatePatientDto);
+  update(
+    @Param('id') id: string,
+    @Body(new ValidationPipe()) updatePatientDto: UpdatePatientDto,
+  ) {
+    return this.patientsService.update(id, updatePatientDto);
   }
 
   @Delete(':id')
