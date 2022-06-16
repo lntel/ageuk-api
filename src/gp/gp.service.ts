@@ -12,11 +12,11 @@ export class GpService {
     private readonly gpRepository: Repository<GP>,
   ) {}
   create(createGpDto: CreateGpDto) {
-    return 'This action adds a new gp';
+    return this.gpRepository.save(createGpDto);
   }
 
   findAll() {
-    return `This action returns all gp`;
+    return this.gpRepository.find({});
   }
 
   async findOne(id: number) {
@@ -29,7 +29,9 @@ export class GpService {
     return `This action updates a #${id} gp`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} gp`;
+  async remove(id: number) {
+    const gp = await this.findOne(id);
+
+    return await gp.remove();
   }
 }
