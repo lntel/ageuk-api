@@ -1,4 +1,4 @@
-import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray, IsInt,  } from 'class-validator';
+import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray, IsInt, IsNotEmpty, IsMobilePhone } from 'class-validator';
 import { Type } from 'class-transformer';
 class ReferralDto {
   @IsDefined()
@@ -11,9 +11,8 @@ class ReferralDto {
   @IsString()
   surname: string;
 
-  @IsOptional()
   @IsString()
-  organisation: string;
+  type: string;
 }
 export class CreatePatientDto {
   @IsDefined({
@@ -37,9 +36,25 @@ export class CreatePatientDto {
   @IsString()
   surname: string;
 
+  @IsNotEmpty()
+  @Matches(
+    new RegExp(
+      /^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$/,
+    ),
+  )
+  telephoneNumber: string;
+
   @IsDefined()
   @IsString()
   addressLine: string;
+
+  @IsNotEmpty()
+  @IsDateString()
+  dob: Date;
+
+  @IsOptional()
+  @IsString()
+  gpFullname: string;
 
   @IsDefined()
   @IsString()
@@ -65,6 +80,7 @@ export class CreatePatientDto {
   )
   postcode: string;
 
+  // This is usually only weeks or days
   @IsDefined()
   @IsString()
   prognosis: string;
@@ -72,6 +88,14 @@ export class CreatePatientDto {
   @IsDefined()
   @IsDateString()
   startDate: Date;
+
+  @IsNotEmpty()
+  @IsDateString()
+  sixWeekReview: Date;
+
+  @IsNotEmpty()
+  @IsDateString()
+  eightWeekReview: Date;
 
   @IsDefined()
   @IsInt()
