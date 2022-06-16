@@ -15,8 +15,9 @@ export class Referral extends BaseEntity {
   @Column()
   surname: string;
 
-  @Column({ nullable: true })
-  organisation: string;
+  // IPPC / Consultant / Marie Curie
+  @Column()
+  type: string;
 
   @OneToOne(() => Patient, (patient) => patient.referral)
   patient: Patient;
