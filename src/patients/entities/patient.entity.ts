@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
 import { Referral } from './referral.entity';
 
@@ -20,7 +20,16 @@ export class Patient extends BaseEntity {
   surname: string;
 
   @Column()
+  telephoneNumber: string;
+
+  @Column()
   addressLine: string;
+
+  @Column()
+  dob: Date;
+
+  @Column({ default: 'Unknown' })
+  gpFullname: string;
 
   @Column()
   city: string;
@@ -30,6 +39,13 @@ export class Patient extends BaseEntity {
 
   @Column()
   postcode: string;
+
+  @Column()
+  sixWeekReview: Date;
+
+  // TODO Does the eight week period take place 8 weeks after beginning of care?
+  @Column()
+  eightWeekReview: Date;
 
   @Column({ default: 'Weeks' })
   prognosis: string;
