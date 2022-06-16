@@ -13,9 +13,6 @@ export class GP extends BaseEntity {
   id: number;
 
   @Column()
-  name: string;
-
-  @Column()
   phoneNumber: string;
 
   @Column()
