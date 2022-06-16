@@ -43,7 +43,7 @@ export class PatientsService {
   }
 
   findAll() {
-    return this.patientRepository.find({});
+    return this.patientRepository.find({ relations: ['generalPractioner'] });
   }
 
   async findOne(id: string) {
@@ -63,8 +63,17 @@ export class PatientsService {
     return patient;
   }
 
-  update(id: number, updatePatientDto: UpdatePatientDto) {
-    return `This action updates a #${id} patient`;
+  async update(id: string, updatePatientDto: UpdatePatientDto) {
+    const patient = await this.patientRepository.findOneBy({
+      id,
+    });
+
+    if (!patient)
+      throw new HttpException(
+        'This patient does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+
   }
 
   async remove(id: string) {
