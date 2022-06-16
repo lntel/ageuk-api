@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } fro
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { LoginStaffDto } from './dto/login-staff.dto';
 
 @Controller('staff')
 export class StaffController {
@@ -10,6 +11,11 @@ export class StaffController {
   @Post()
   create(@Body(new ValidationPipe()) createStaffDto: CreateStaffDto) {
     return this.staffService.create(createStaffDto);
+  }
+
+  @Post('login')
+  login(@Body(new ValidationPipe()) loginStaffDto: LoginStaffDto) {
+    return this.staffService.login(loginStaffDto);
   }
 
   @Get()
