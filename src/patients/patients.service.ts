@@ -43,7 +43,9 @@ export class PatientsService {
   }
 
   findAll() {
-    return this.patientRepository.find({ relations: ['generalPractioner'] });
+    return this.patientRepository.find({
+      relations: ['generalPractioner', 'referral'],
+    });
   }
 
   async findOne(id: string) {
