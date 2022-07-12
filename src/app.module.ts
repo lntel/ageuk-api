@@ -9,9 +9,14 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { Referral } from './patients/entities/referral.entity';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 10,
