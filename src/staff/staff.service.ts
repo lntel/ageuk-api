@@ -22,27 +22,28 @@ export class StaffService {
     });
   }
 
-  async login(loginStaffDto: LoginStaffDto) {
-    const staff = await this.staffRepository.findOneBy({
-      emailAddress: loginStaffDto.emailAddress,
-    });
+  // TODO move this to the auth service
+  // async login(loginStaffDto: LoginStaffDto) {
+  //   const staff = await this.staffRepository.findOneBy({
+  //     emailAddress: loginStaffDto.emailAddress,
+  //   });
 
-    if (!staff)
-      throw new HttpException(
-        'This email address does not exist',
-        HttpStatus.NOT_FOUND,
-      );
+  //   if (!staff)
+  //     throw new HttpException(
+  //       'This email address does not exist',
+  //       HttpStatus.NOT_FOUND,
+  //     );
 
-    const result = compareSync(loginStaffDto.password, staff.password);
+  //   const result = compareSync(loginStaffDto.password, staff.password);
 
-    if (!result)
-      throw new HttpException(
-        'You have provided an incorrect password, try again',
-        HttpStatus.UNAUTHORIZED,
-      );
+  //   if (!result)
+  //     throw new HttpException(
+  //       'You have provided an incorrect password, try again',
+  //       HttpStatus.UNAUTHORIZED,
+  //     );
 
-    return 'Successfully signed in, please wait';
-  }
+  //   return 'Successfully signed in, please wait';
+  // }
 
   async create(createStaffDto: CreateStaffDto) {
     if (await this.isEmailInUse(createStaffDto.emailAddress))
@@ -64,6 +65,19 @@ export class StaffService {
     const staff = await this.staffRepository.findOne({
       where: {
         id,
+      },
+    });
+
+    if (!staff)
+      throw new HttpException('Staff member not found', HttpStatus.NOT_FOUND);
+
+    return staff;
+  }
+
+  async findOneBy(key: string, value: string) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        [key]: value,
       },
     });
 
