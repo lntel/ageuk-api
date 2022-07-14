@@ -17,5 +17,9 @@ export default () => ({
             secret: process.env.JWT_REFRESH_SECRET || 'refresh_secret',
             expiresIn: process.env.JWT_REFRESH_EXPIRY || '5m'
         }
+    },
+    rateLimit: {
+        ttl: 60,
+        limit: 10
     }
 });
