@@ -10,7 +10,6 @@ import { Referral } from './patients/entities/referral.entity';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TokenModule } from './token/token.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -20,14 +19,17 @@ import configuration from './config/configuration';
       expandVariables: true,
       load: [configuration],
     }),
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        ttl: configService.get<number>('rateLimit.ttl'),
+        limit: configService.get<number>('rateLimit.limit'),
+      }),
     }),
-    StaffModule,
-    PatientsModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('database.host'),
@@ -38,10 +40,10 @@ import configuration from './config/configuration';
         entities: [Staff, Patient, Referral, GP],
         synchronize: true,
       }),
-      inject: [ConfigService]
     }),
+    StaffModule,
+    PatientsModule,
     GpModule,
-    TokenModule,
   ],
   providers: [
     {
