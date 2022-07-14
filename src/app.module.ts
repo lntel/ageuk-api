@@ -9,12 +9,15 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { Referral } from './patients/entities/referral.entity';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TokenModule } from './token/token.module';
 import configuration from './config/configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
+      expandVariables: true,
       load: [configuration],
     }),
     ThrottlerModule.forRoot({
@@ -23,17 +26,22 @@ import configuration from './config/configuration';
     }),
     StaffModule,
     PatientsModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'root',
-      database: 'ageuk',
-      entities: [Staff, Patient, Referral, GP],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('database.host'),
+        port: configService.get<number>('database.port'),
+        username: configService.get<string>('database.username'),
+        password: configService.get<string>('database.password'),
+        database: configService.get<string>('database.name'),
+        entities: [Staff, Patient, Referral, GP],
+        synchronize: true,
+      }),
+      inject: [ConfigService]
     }),
     GpModule,
+    TokenModule,
   ],
   providers: [
     {
