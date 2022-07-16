@@ -10,7 +10,9 @@ import { Referral } from './patients/entities/referral.entity';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -44,6 +46,10 @@ import configuration from './config/configuration';
     StaffModule,
     PatientsModule,
     GpModule,
+    AuthModule,
+  ],
+  controllers: [
+    AppController
   ],
   providers: [
     {
