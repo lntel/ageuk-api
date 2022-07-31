@@ -6,9 +6,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log']
   });
-
+  
   app.use(helmet());
 
+  // ? add URI versioning potentially?
+  
   await app.listen(3000);
 }
 bootstrap();
