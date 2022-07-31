@@ -13,6 +13,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { AppController } from './app.controller';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { AppController } from './app.controller';
       expandVariables: true,
       load: [configuration],
     }),
+    ScheduleModule.forRoot(),
+    TasksModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
