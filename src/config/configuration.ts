@@ -11,7 +11,7 @@ export default () => ({
     jwt: {
         accessToken: {
             secret: process.env.JWT_ACCESS_SECRET || 'access_secret',
-            expiresIn: process.env.JWT_ACCESS_EXPIRY || '60s'
+            expiresIn: process.env.JWT_ACCESS_EXPIRY || '1h'
         },
         refreshToken: {
             secret: process.env.JWT_REFRESH_SECRET || 'refresh_secret',

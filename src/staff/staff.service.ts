@@ -22,28 +22,27 @@ export class StaffService {
     });
   }
 
-  // TODO move this to the auth service
-  // async login(loginStaffDto: LoginStaffDto) {
-  //   const staff = await this.staffRepository.findOneBy({
-  //     emailAddress: loginStaffDto.emailAddress,
-  //   });
+  async login(emailAddress: string, password: string) {
+    const staff = await this.staffRepository.findOneBy({
+      emailAddress,
+    });
 
-  //   if (!staff)
-  //     throw new HttpException(
-  //       'This email address does not exist',
-  //       HttpStatus.NOT_FOUND,
-  //     );
+    if (!staff)
+      return new HttpException(
+        'This email address does not exist',
+        HttpStatus.NOT_FOUND,
+      );
 
-  //   const result = compareSync(loginStaffDto.password, staff.password);
+    const result = compareSync(password, staff.password);
 
-  //   if (!result)
-  //     throw new HttpException(
-  //       'You have provided an incorrect password, try again',
-  //       HttpStatus.UNAUTHORIZED,
-  //     );
+    if (!result)
+      return new HttpException(
+        'You have provided an incorrect password, try again',
+        HttpStatus.UNAUTHORIZED,
+      );
 
-  //   return 'Successfully signed in, please wait';
-  // }
+    return staff;
+  }
 
   async create(createStaffDto: CreateStaffDto) {
     if (await this.isEmailInUse(createStaffDto.emailAddress))
@@ -58,7 +57,9 @@ export class StaffService {
   }
 
   findAll() {
-    return this.staffRepository.find({});
+    return this.staffRepository.find({
+      select: ['dob', 'emailAddress', 'forename', 'id', 'surname']
+    });
   }
 
   async findOne(id: number) {

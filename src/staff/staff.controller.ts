@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Inject, forwardRef } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { LoginStaffDto } from './dto/login-staff.dto';
+import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('staff')
 export class StaffController {
   constructor(
     private readonly staffService: StaffService,
+    private readonly authService: AuthService,
   ) {}
 
   @Post()
@@ -15,9 +17,10 @@ export class StaffController {
     return this.staffService.create(createStaffDto);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Body(new ValidationPipe()) LoginStaffDto: LoginStaffDto, @Request() req) {
-    //return this.authService.generateTokens(req.user);
+  login(@Request() req) {
+    return this.authService.login(req.user);
   }
 
   @Get()
