@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GpService } from 'src/gp/gp.service';
 import { Repository } from 'typeorm';
@@ -8,6 +8,9 @@ import { Patient } from './entities/patient.entity';
 
 @Injectable()
 export class PatientsService {
+
+  private readonly logger = new Logger(PatientsService.name);
+
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
@@ -66,16 +69,36 @@ export class PatientsService {
   }
 
   async update(id: string, updatePatientDto: UpdatePatientDto) {
-    const patient = await this.patientRepository.findOneBy({
-      id,
-    });
 
-    if (!patient)
-      throw new HttpException(
-        'This patient does not exist',
-        HttpStatus.NOT_FOUND,
-      );
+      const patient = await this.patientRepository.findOneBy({
+        id,
+      });
+  
+      if (!patient)
+        throw new HttpException(
+          'This patient does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+  
+        patient.startDate = updatePatientDto.startDate || patient.startDate;
+        patient.firstName = updatePatientDto.firstName || patient.firstName;
+        patient.middleNames = updatePatientDto.middleNames || patient.middleNames;
+        patient.surname = updatePatientDto.surname || patient.surname;
+        patient.telephoneNumber = updatePatientDto.telephoneNumber || patient.telephoneNumber;
+        patient.addressLine = updatePatientDto.addressLine || patient.addressLine;
+        patient.dob = updatePatientDto.dob || patient.dob;
+        patient.gpFullname = updatePatientDto.gpFullname || patient.gpFullname;
+        patient.city = updatePatientDto.city || patient.city;
+        patient.county = updatePatientDto.county || patient.county;
+        patient.postcode = updatePatientDto.postcode || patient.postcode;
+        patient.sixWeekReview = updatePatientDto.sixWeekReview || patient.sixWeekReview;
+        patient.eightWeekReview = updatePatientDto.eightWeekReview || patient.eightWeekReview;
+        patient.prognosis = updatePatientDto.prognosis || patient.prognosis;
+        patient.diagnoses = updatePatientDto.diagnoses || patient.diagnoses;
 
+        const result = await patient.save();
+
+        return result;
   }
 
   async remove(id: string) {
