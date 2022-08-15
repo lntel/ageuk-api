@@ -6,7 +6,6 @@ import { PatientsModule } from './patients/patients.module';
 import { Patient } from './patients/entities/patient.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { Referral } from './patients/entities/referral.entity';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -43,7 +42,8 @@ import { TasksModule } from './tasks/tasks.module';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.name'),
-        entities: [Staff, Patient, Referral, GP],
+        entities: [Staff, Patient, GP],
+        migrations: ['src/migrations/**/*.ts'],
         synchronize: true,
       }),
     }),

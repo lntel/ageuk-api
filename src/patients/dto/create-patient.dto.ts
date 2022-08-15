@@ -1,19 +1,5 @@
 import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray, IsInt, IsNotEmpty, IsMobilePhone } from 'class-validator';
 import { Type } from 'class-transformer';
-class ReferralDto {
-  @IsDefined()
-  @IsDateString()
-  date: Date;
-
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  surname: string;
-
-  @IsString()
-  type: string;
-}
 export class CreatePatientDto {
   @IsDefined({
     message: 'You must enter an NHS number',
@@ -102,8 +88,6 @@ export class CreatePatientDto {
   gpId: number;
 
   @IsDefined()
-  @IsNotEmptyObject()
-  @ValidateNested()
-  @Type(() => ReferralDto)
-  referral: ReferralDto;
+  @IsString()
+  referral: string;
 }

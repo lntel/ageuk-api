@@ -47,7 +47,7 @@ export class PatientsService {
 
   findAll() {
     return this.patientRepository.find({
-      relations: ['generalPractioner', 'referral'],
+      relations: ['generalPractioner'],
     });
   }
 

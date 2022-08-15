@@ -1,6 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
-import { Referral } from './referral.entity';
 
 @Entity()
 export class Patient extends BaseEntity {
@@ -57,7 +56,6 @@ export class Patient extends BaseEntity {
   @JoinTable()
   generalPractioner: GP;
 
-  @OneToOne(() => Referral, (referral) => referral.patient)
-  @JoinColumn()
-  referral: Referral;
+  @Column()
+  referral: string;
 }
