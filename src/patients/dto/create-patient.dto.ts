@@ -90,4 +90,18 @@ export class CreatePatientDto {
   @IsDefined()
   @IsString()
   referral: string;
+
+  @IsDefined()
+  @IsString()
+  nokDetails: string;
+
+  @IsOptional()
+  @IsDefined()
+  @IsString()
+  firstPointOfContact: string;
+
+  @IsOptional()
+  @IsDefined()
+  @IsArray()
+  additionalContacts: string[];
 }

@@ -51,11 +51,21 @@ export class Patient extends BaseEntity {
 
   @Column('text', { array: true })
   diagnoses: string[];
-
+  
   @ManyToOne(() => GP, (gp) => gp.patients)
   @JoinTable()
   generalPractioner: GP;
-
+  
   @Column()
   referral: string;
+  
+  @Column()
+  nokDetails: string;
+  
+  @Column({ nullable: true })
+  firstPointOfContact: string;
+
+  @Column('text', { array: true, default: [] })
+  additionalContacts: string[];
+
 }
