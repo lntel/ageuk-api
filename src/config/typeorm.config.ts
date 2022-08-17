@@ -20,10 +20,5 @@ export default TypeOrmModule.forRootAsync({
     entities: [`${__dirname}/../**/*.{ts,js}`],
     migrations: ['src/migrations/*.ts'],
     synchronize: true,
-    
   }),
-  dataSourceFactory: async (options) => {
-    const dataSource = await new DataSource(options).initialize();
-    return dataSource;
-  },
 });
