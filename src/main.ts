@@ -9,8 +9,10 @@ async function bootstrap() {
   
   app.use(helmet());
 
+  app.enableCors();
+
   // ? add URI versioning potentially?
   
-  await app.listen(3000);
+  await app.listen(5000);
 }
 bootstrap();

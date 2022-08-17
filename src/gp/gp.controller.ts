@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { GpService } from './gp.service';
 import { CreateGpDto } from './dto/create-gp.dto';
 import { UpdateGpDto } from './dto/update-gp.dto';
@@ -8,7 +8,7 @@ export class GpController {
   constructor(private readonly gpService: GpService) {}
 
   @Post()
-  create(@Body() createGpDto: CreateGpDto) {
+  create(@Body(new ValidationPipe()) createGpDto: CreateGpDto) {
     return this.gpService.create(createGpDto);
   }
 

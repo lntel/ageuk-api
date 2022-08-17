@@ -5,13 +5,14 @@ import {
 } from 'class-validator';
 
 export class CreateGpDto {
-  @IsDefined()
-  @IsString()
-  name: string;
 
   @IsDefined()
   @IsString()
   surgeryName: string;
+  
+  @IsDefined()
+  @IsString()
+  address: string;
 
   @IsDefined()
   @Matches(
