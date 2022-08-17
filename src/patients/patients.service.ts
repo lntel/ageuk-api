@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GpService } from 'src/gp/gp.service';
 import { Repository } from 'typeorm';
@@ -13,6 +13,7 @@ export class PatientsService {
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
+    @Inject(forwardRef(() => GpService))
     private readonly gpService: GpService,
   ) {}
 
@@ -44,10 +45,22 @@ export class PatientsService {
     });
   }
 
-  findAll() {
-    return this.patientRepository.find({
+  async findAll() {
+    return await this.patientRepository.find({
       relations: ['generalPractioner'],
     });
+  }
+
+  async findFromGp(id: number) {
+    const patients = await this.patientRepository.find({
+      where: {
+        generalPractioner: {
+          id
+        }
+      }
+    });
+
+    return patients;
   }
 
   async findOne(id: string) {
