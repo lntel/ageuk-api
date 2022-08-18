@@ -36,7 +36,9 @@ export class GpService {
   async remove(id: number) {
     const gp = await this.findOne(id);
 
-    const patients = await this.patientService.findAll()
+    let patients = await this.patientService.findAll();
+
+    patients = patients.filter(p => p.generalPractioner.id === id);
 
     if (patients.length)
       throw new HttpException(
