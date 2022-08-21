@@ -1,5 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
+import { Assessment } from './assessment.entity';
 
 @Entity()
 export class Patient extends BaseEntity {
@@ -55,6 +56,9 @@ export class Patient extends BaseEntity {
   @ManyToOne(() => GP, (gp) => gp.patients)
   @JoinTable()
   generalPractioner: GP;
+
+  @OneToOne(() => Assessment, assessment => assessment.patient, { cascade: true })
+  assessment: Assessment;
   
   @Column()
   referral: string;
