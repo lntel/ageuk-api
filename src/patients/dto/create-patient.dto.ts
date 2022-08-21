@@ -1,5 +1,57 @@
-import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray, IsInt, IsNotEmpty, IsMobilePhone } from 'class-validator';
+import { IsString, Matches, IsOptional, IsDateString, IsDefined, IsNotEmptyObject, ValidateNested, IsArray, IsInt, IsNotEmpty, IsMobilePhone, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Assessment } from '../entities/assessment.entity';
+
+export class CreatePatientAssessmentDto {
+  
+  @IsDefined()
+  @IsBoolean()
+  hasDnacpr: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  riskOfPressureSores: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  reducedMobility: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  medicationAssistant: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  marChartInPlace: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  personalCareAssistant: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  pressureSores: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  weightBearing: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  painAndSymptomSupport: boolean;
+  
+  @IsDefined()
+  @IsBoolean()
+  medicationPresent: boolean;
+
+  @IsDefined()
+  @IsBoolean()
+  syringeDriver: boolean;
+
+  @IsOptional()
+  @IsDefined()
+  syringeDriverInstallationDate?: Date;
+}
 export class CreatePatientDto {
   @IsDefined({
     message: 'You must enter an NHS number',
@@ -56,6 +108,10 @@ export class CreatePatientDto {
   diagnoses: string[];
 
   @IsDefined()
+  @IsArray()
+  allergies: string[];
+
+  @IsDefined()
   @Matches(
     new RegExp(
       /^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/,
@@ -104,4 +160,9 @@ export class CreatePatientDto {
   @IsDefined()
   @IsArray()
   additionalContacts: string[];
+
+  @IsDefined()
+  @ValidateNested()
+  assessment: CreatePatientAssessmentDto;
+
 }

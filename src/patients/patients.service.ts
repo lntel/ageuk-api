@@ -4,6 +4,7 @@ import { GpService } from 'src/gp/gp.service';
 import { Repository } from 'typeorm';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { Assessment } from './entities/assessment.entity';
 import { Patient } from './entities/patient.entity';
 
 @Injectable()
@@ -13,6 +14,8 @@ export class PatientsService {
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
+    @InjectRepository(Assessment)
+    private readonly assessmentRepository: Repository<Assessment>,
     @Inject(forwardRef(() => GpService))
     private readonly gpService: GpService,
   ) {}
@@ -31,6 +34,14 @@ export class PatientsService {
         'This NHS number is already in use',
         HttpStatus.CONFLICT,
       );
+
+      const { assessment: assessmentDto } = createPatientDto;
+
+    if(assessmentDto.syringeDriver && !assessmentDto.syringeDriverInstallationDate)
+        throw new HttpException(
+          'You must provide a syringe driver installation date',
+          HttpStatus.BAD_REQUEST
+        );
 
     const patient = this.patientRepository.create(createPatientDto);
 
@@ -124,6 +135,8 @@ export class PatientsService {
   async remove(id: string) {
     const patient = await this.findOne(id);
 
-    return this.patientRepository.remove([patient]);
+    const result = await patient.remove();
+
+    return result;
   }
 }

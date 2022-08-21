@@ -6,9 +6,10 @@ import { Patient } from './entities/patient.entity';
 import { GP } from '../gp/entities/gp.entity';
 import { GpService } from 'src/gp/gp.service';
 import { GpModule } from 'src/gp/gp.module';
+import { Assessment } from './entities/assessment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Patient]), forwardRef(() => GpModule)],
+  imports: [TypeOrmModule.forFeature([Patient, Assessment]), forwardRef(() => GpModule)],
   controllers: [PatientsController],
   providers: [PatientsService],
   exports: [PatientsService]
