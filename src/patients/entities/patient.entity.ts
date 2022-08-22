@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
 import { Assessment } from './assessment.entity';
 
@@ -61,7 +61,7 @@ export class Patient extends BaseEntity {
   assessment: Assessment;
   
   @Column()
-  referral: string;
+  referredBy: string;
   
   @Column()
   nokDetails: string;
@@ -71,5 +71,20 @@ export class Patient extends BaseEntity {
 
   @Column('text', { array: true, default: [] })
   additionalContacts: string[];
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.sixWeekReview = this.generateReviewDate(6);
+    this.eightWeekReview = this.generateReviewDate(8);
+  }
+
+  public generateReviewDate(weeks: number) {
+    // https://stackoverflow.com/a/19691491
+    const result = new Date();
+
+    result.setDate(result.getDate() + (weeks * 7));
+
+    return result;
+  }
 
 }
