@@ -29,8 +29,20 @@ export class GpService {
     });
   }
 
-  update(id: number, updateGpDto: UpdateGpDto) {
-    return `This action updates a #${id} gp`;
+  async update(id: number, updateGpDto: UpdateGpDto) {
+    const surgery = await this.gpRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    surgery.surgeryName = updateGpDto.surgeryName || surgery.surgeryName;
+    surgery.phoneNumber = updateGpDto.phoneNumber || surgery.phoneNumber;
+    surgery.address = updateGpDto.address || surgery.address;
+
+    const result = await surgery.save();
+
+    return result;
   }
 
   async remove(id: number) {

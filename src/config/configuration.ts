@@ -19,7 +19,7 @@ export default () => ({
         }
     },
     rateLimit: {
-        ttl: 60,
-        limit: 10
+        ttl: process.env.RATE_LIMIT_TTL || 1,
+        limit: process.env.RATE_LIMIT_AMOUNT || 60
     }
 });
