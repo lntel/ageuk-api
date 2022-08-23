@@ -37,7 +37,7 @@ export class PatientsService {
 
       const { assessment: assessmentDto } = createPatientDto;
 
-    if(assessmentDto.syringeDriver && !assessmentDto.syringeDriverInstallationDate)
+    if(assessmentDto && assessmentDto.syringeDriver && !assessmentDto.syringeDriverSetupDate)
         throw new HttpException(
           'You must provide a syringe driver installation date',
           HttpStatus.BAD_REQUEST
@@ -58,7 +58,7 @@ export class PatientsService {
 
   async findAll() {
     return await this.patientRepository.find({
-      relations: ['generalPractioner'],
+      relations: ['generalPractioner', 'assessment'],
     });
   }
 

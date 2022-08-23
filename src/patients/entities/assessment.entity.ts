@@ -9,40 +9,37 @@ export class Assessment extends BaseEntity {
     id: string;
 
     @Column({ type: 'boolean', default: false })
-    hasDnacpr: boolean;
+    dnacpr: boolean;
 
     @Column({ type: 'boolean', default: false })
-    riskOfPressureSores: boolean;
+    riskOfPressure: boolean;
 
     @Column({ type: 'boolean', default: false })
     reducedMobility: boolean;
 
     @Column({ type: 'boolean', default: false })
-    medicationAssistant: boolean;
+    marChart: boolean;
 
     @Column({ type: 'boolean', default: false })
-    marChartInPlace: boolean;
+    careAssistant: boolean;
 
     @Column({ type: 'boolean', default: false })
-    personalCareAssistant: boolean;
+    pressureSore: boolean;
 
     @Column({ type: 'boolean', default: false })
-    pressureSores: boolean;
+    weightBear: boolean;
 
     @Column({ type: 'boolean', default: false })
-    weightBearing: boolean;
+    painSymptom: boolean;
 
     @Column({ type: 'boolean', default: false })
-    painAndSymptomSupport: boolean;
-
-    @Column({ type: 'boolean', default: false })
-    medicationPresent: boolean;
+    medication: boolean;
 
     @Column({ type: 'boolean', default: false })
     syringeDriver: boolean;
 
-    @Column({ type: 'date',  })
-    syringeDriverInstallationDate?: Date;
+    @Column({ type: 'date', nullable: true })
+    syringeDriverSetupDate?: Date;
 
     @OneToOne(() => Patient, patient => patient.assessment, { onDelete: 'CASCADE' })
     @JoinColumn()
