@@ -11,11 +11,11 @@ export default () => ({
     jwt: {
         accessToken: {
             secret: process.env.JWT_ACCESS_SECRET || 'access_secret',
-            expiresIn: process.env.JWT_ACCESS_EXPIRY || '10s'
+            expiresIn: process.env.JWT_ACCESS_EXPIRY || '15m'
         },
         refreshToken: {
             secret: process.env.JWT_REFRESH_SECRET || 'refresh_secret',
-            expiresIn: process.env.JWT_REFRESH_EXPIRY || '5m'
+            expiresIn: process.env.JWT_REFRESH_EXPIRY || '1w'
         }
     },
     rateLimit: {
