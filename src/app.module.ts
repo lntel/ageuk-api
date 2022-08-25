@@ -9,11 +9,11 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { AppController } from './app.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
+import { AuthModule } from './auth/auth.module';
 import ormConfig from './config/typeorm.config';
 import rateLimitConfig from './config/rateLimit.config';
 
