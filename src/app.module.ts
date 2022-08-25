@@ -14,6 +14,7 @@ import { AppController } from './app.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
+import { RolesModule } from './roles/roles.module';
 import ormConfig from './config/typeorm.config';
 import rateLimitConfig from './config/rateLimit.config';
 
@@ -32,6 +33,7 @@ import rateLimitConfig from './config/rateLimit.config';
     PatientsModule,
     GpModule,
     AuthModule,
+    RolesModule,
   ],
   controllers: [
     AppController
