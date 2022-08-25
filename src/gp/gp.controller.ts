@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { GpService } from './gp.service';
 import { CreateGpDto } from './dto/create-gp.dto';
 import { UpdateGpDto } from './dto/update-gp.dto';
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 
 @Controller('gp')
 export class GpController {
@@ -12,6 +13,7 @@ export class GpController {
     return this.gpService.create(createGpDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get()
   findAll() {
     return this.gpService.findAll();

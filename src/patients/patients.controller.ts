@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseG
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 @Controller('patients')
+@UseGuards(AccessTokenGuard)
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
@@ -15,7 +17,7 @@ export class PatientsController {
   findAll() {
     return this.patientsService.findAll();
   }
-
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.patientsService.findOne(id);

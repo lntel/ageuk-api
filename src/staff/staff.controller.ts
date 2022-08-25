@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseG
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 
 @Controller('staff')
+//@UseGuards(AccessTokenGuard)
 export class StaffController {
   constructor(
     private readonly staffService: StaffService,
@@ -12,11 +14,6 @@ export class StaffController {
   @Post()
   create(@Body(new ValidationPipe()) createStaffDto: CreateStaffDto) {
     return this.staffService.create(createStaffDto);
-  }
-
-  @Post('login')
-  async login(@Response({ passthrough: true }) response, @Request() req) {
-    
   }
 
   @Get()
