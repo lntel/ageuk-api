@@ -16,6 +16,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
 import ormConfig from './config/typeorm.config';
 import rateLimitConfig from './config/rateLimit.config';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -43,4 +44,6 @@ import rateLimitConfig from './config/rateLimit.config';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
