@@ -5,25 +5,25 @@ import { UpdateGpDto } from './dto/update-gp.dto';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 
 @Controller('gp')
+@UseGuards(AccessTokenGuard)
 export class GpController {
   constructor(private readonly gpService: GpService) {}
-
+  
   @Post()
   create(@Body(new ValidationPipe()) createGpDto: CreateGpDto) {
     return this.gpService.create(createGpDto);
   }
-
-  @UseGuards(AccessTokenGuard)
+  
   @Get()
   findAll() {
     return this.gpService.findAll();
   }
-
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.gpService.findOne(+id);
   }
-
+  
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateGpDto: UpdateGpDto) {
     return this.gpService.update(+id, updateGpDto);
