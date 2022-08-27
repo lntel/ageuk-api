@@ -1,8 +1,8 @@
 import { Role } from 'src/roles/entities/role.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Staff {
+export class Staff extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

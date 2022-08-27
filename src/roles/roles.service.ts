@@ -43,8 +43,20 @@ export class RolesService {
     return await this.roleRepository.findOneBy({ id });
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: number, updateRoleDto: UpdateRoleDto) {
+    const role = await this.roleRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    if(!role)
+      throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
+
+    role.name = updateRoleDto.name || role.name;
+    role.permissions = updateRoleDto.permissions || role.permissions;
+
+    return await role.save();
   }
 
   async remove(id: number) {
