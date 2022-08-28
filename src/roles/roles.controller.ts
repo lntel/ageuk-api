@@ -1,9 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { Permission } from 'src/common/decorators/permission.decorator';
+import { PermissionTypeEnum } from './types/Permissions';
 
 @Controller('roles')
+@UseGuards(AccessTokenGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
@@ -13,6 +18,7 @@ export class RolesController {
   }
 
   @Get()
+  @Permission(PermissionTypeEnum.MANAGE_STAFF)
   findAll() {
     return this.rolesService.findAll();
   }

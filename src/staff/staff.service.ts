@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
@@ -12,7 +12,7 @@ export class StaffService {
   constructor(
     @InjectRepository(Staff)
     private readonly staffRepository: Repository<Staff>,
-    @Inject(RolesService)
+    @Inject(forwardRef(() => RolesService))
     private readonly rolesService: RolesService,
   ) {}
 
@@ -82,6 +82,7 @@ export class StaffService {
       where: {
         [key]: value,
       },
+      relations: ['role']
     });
 
     if (!staff)

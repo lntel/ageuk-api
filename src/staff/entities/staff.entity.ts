@@ -1,5 +1,5 @@
 import { Role } from 'src/roles/entities/role.entity';
-import { BaseEntity, Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Staff extends BaseEntity {
@@ -22,7 +22,7 @@ export class Staff extends BaseEntity {
   emailAddress: string;
 
   @ManyToOne(() => Role, role => role.staff)
-  @JoinTable()
+  @JoinColumn()
   role: Role;
 
 }

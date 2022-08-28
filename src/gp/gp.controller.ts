@@ -3,9 +3,11 @@ import { GpService } from './gp.service';
 import { CreateGpDto } from './dto/create-gp.dto';
 import { UpdateGpDto } from './dto/update-gp.dto';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { Permission } from 'src/common/decorators/permission.decorator';
+import { PermissionTypeEnum } from 'src/roles/types/Permissions';
 
+@Permission(PermissionTypeEnum.MANAGE_STAFF)
 @Controller('gp')
-@UseGuards(AccessTokenGuard)
 export class GpController {
   constructor(private readonly gpService: GpService) {}
   
