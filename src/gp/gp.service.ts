@@ -1,6 +1,11 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Patient } from 'src/patients/entities/patient.entity';
 import { PatientsService } from 'src/patients/patients.service';
 import { Repository } from 'typeorm';
 import { CreateGpDto } from './dto/create-gp.dto';
@@ -13,7 +18,7 @@ export class GpService {
     @InjectRepository(GP)
     private readonly gpRepository: Repository<GP>,
     @Inject(forwardRef(() => PatientsService))
-    private readonly patientService: PatientsService
+    private readonly patientService: PatientsService,
   ) {}
   create(createGpDto: CreateGpDto) {
     return this.gpRepository.save(createGpDto);
@@ -24,16 +29,21 @@ export class GpService {
   }
 
   async findOne(id: number) {
-    return await this.gpRepository.findOneBy({
+    const result = await this.gpRepository.findOneBy({
       id,
     });
+
+    if (!result)
+      throw new HttpException('GP could not be found', HttpStatus.NOT_FOUND);
+
+    return result;
   }
 
   async update(id: number, updateGpDto: UpdateGpDto) {
     const surgery = await this.gpRepository.findOne({
       where: {
-        id
-      }
+        id,
+      },
     });
 
     surgery.surgeryName = updateGpDto.surgeryName || surgery.surgeryName;
@@ -50,7 +60,7 @@ export class GpService {
 
     let patients = await this.patientService.findAll();
 
-    patients = patients.filter(p => p.generalPractioner.id === id);
+    patients = patients.filter((p) => p.generalPractioner.id === id);
 
     if (patients.length)
       throw new HttpException(
