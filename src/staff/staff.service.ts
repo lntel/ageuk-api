@@ -1,4 +1,4 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
@@ -132,5 +132,19 @@ export class StaffService {
     const staff = await this.findOne(id);
 
     return this.staffRepository.remove(staff);
+  }
+
+  async getCurrentUser(user) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id: user.sub
+      },
+      relations: ['role']
+    });
+
+    return {
+      ...staff,
+      password: undefined
+    };
   }
 }
