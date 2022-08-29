@@ -19,11 +19,9 @@ export class PermissionGuard implements CanActivate {
         
         const request = context.switchToHttp().getRequest();
 
-        const { emailAddress } = request.user;
+        const { sub } = request.user;
 
-        const user = await this._staffService.findOneBy('emailAddress', emailAddress);
-
-        console.log(permission)
+        const user = await this._staffService.findOne(sub);
 
         if(!user || !user.role || user.role.permissions.indexOf(permission) < 0)
             return false;
