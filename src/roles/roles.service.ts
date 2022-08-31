@@ -24,7 +24,7 @@ export class RolesService {
     if (exists)
       throw new HttpException(
         'This role already exists',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.CONFLICT,
       );
 
     const role = this.roleRepository.create({
