@@ -6,8 +6,8 @@ import { Permission } from 'src/common/decorators/permission.decorator';
 import { PermissionTypeEnum } from 'src/roles/types/Permissions';
 import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 
-@Permission(PermissionTypeEnum.MANAGE_STAFF)
 @Controller('staff')
+@Permission(PermissionTypeEnum.MANAGE_STAFF)
 export class StaffController {
   constructor(
     private readonly staffService: StaffService,
