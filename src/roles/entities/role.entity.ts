@@ -1,5 +1,5 @@
 import { Staff } from "src/staff/entities/staff.entity";
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PermissionTypeEnum } from "../types/Permissions";
 
 @Entity()
@@ -18,6 +18,12 @@ export class Role extends BaseEntity {
         default: []
     })
     permissions: PermissionTypeEnum[];
+
+    @CreateDateColumn()
+    created: Date;
+
+    @UpdateDateColumn()
+    lastUpdated: Date;
 
     @OneToMany(() => Staff, staff => staff.role)
     staff: Staff[];
