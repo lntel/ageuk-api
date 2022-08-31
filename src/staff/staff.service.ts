@@ -1,4 +1,4 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Request } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
@@ -74,7 +74,10 @@ export class StaffService {
     if (!staff)
       throw new HttpException('Staff member not found', HttpStatus.NOT_FOUND);
 
-    return staff;
+    return {
+      ...staff,
+      password: undefined
+    };
   }
 
   async findOneBy(key: string, value: string) {
@@ -129,7 +132,14 @@ export class StaffService {
   }
 
   async remove(id: number) {
-    const staff = await this.findOne(id);
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    if(!staff)
+      throw new NotFoundException();
 
     return this.staffRepository.remove(staff);
   }
