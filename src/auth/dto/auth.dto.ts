@@ -3,7 +3,9 @@ import { IsDefined, IsEmail, IsNotEmpty } from "class-validator";
 class AuthLoginDTO {
     @IsDefined()
     @IsNotEmpty()
-    @IsEmail()
+    @IsEmail({}, {
+        message: 'The email address you entered is invalid'
+    })
     emailAddress: string;
 
     @IsDefined()

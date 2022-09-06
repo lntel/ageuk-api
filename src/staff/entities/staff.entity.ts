@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Role } from 'src/roles/entities/role.entity';
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Staff {
+export class Staff extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,4 +20,9 @@ export class Staff {
 
   @Column()
   emailAddress: string;
+
+  @ManyToOne(() => Role, role => role.staff, { eager: true })
+  @JoinColumn()
+  role: Role;
+
 }

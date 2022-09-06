@@ -2,8 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseG
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { Permission } from 'src/common/decorators/permission.decorator';
+import { PermissionTypeEnum } from 'src/roles/types/Permissions';
+import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 
 @Controller('staff')
+@Permission(PermissionTypeEnum.MANAGE_STAFF)
 export class StaffController {
   constructor(
     private readonly staffService: StaffService,
@@ -14,14 +18,14 @@ export class StaffController {
     return this.staffService.create(createStaffDto);
   }
 
-  @Post('login')
-  async login(@Response({ passthrough: true }) response, @Request() req) {
-    
-  }
-
   @Get()
   findAll() {
     return this.staffService.findAll();
+  }
+  
+  @Get('/profile')
+  getCurrentUser(@GetCurrentUser() user) {
+    return this.staffService.getCurrentUser(user);
   }
 
   @Get(':id')
@@ -38,4 +42,5 @@ export class StaffController {
   remove(@Param('id') id: string) {
     return this.staffService.remove(+id);
   }
+
 }

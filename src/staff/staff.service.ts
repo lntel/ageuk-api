@@ -1,17 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
-import { LoginStaffDto } from './dto/login-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
 import { compareSync, hashSync } from 'bcrypt';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class StaffService {
   constructor(
     @InjectRepository(Staff)
     private readonly staffRepository: Repository<Staff>,
+    @Inject(forwardRef(() => RolesService))
+    private readonly rolesService: RolesService,
   ) {}
 
   async isEmailInUse(emailAddress: string) {
@@ -58,7 +60,7 @@ export class StaffService {
 
   findAll() {
     return this.staffRepository.find({
-      select: ['dob', 'emailAddress', 'forename', 'id', 'surname']
+      select: ['dob', 'emailAddress', 'forename', 'id', 'surname'],
     });
   }
 
@@ -72,7 +74,10 @@ export class StaffService {
     if (!staff)
       throw new HttpException('Staff member not found', HttpStatus.NOT_FOUND);
 
-    return staff;
+    return {
+      ...staff,
+      password: undefined
+    };
   }
 
   async findOneBy(key: string, value: string) {
@@ -80,6 +85,7 @@ export class StaffService {
       where: {
         [key]: value,
       },
+      relations: ['role']
     });
 
     if (!staff)
@@ -88,13 +94,67 @@ export class StaffService {
     return staff;
   }
 
-  update(id: number, updateStaffDto: UpdateStaffDto) {
-    return `This action updates a #${id} staff`;
+  async update(id: number, updateStaffDto: UpdateStaffDto) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!staff)
+      throw new HttpException(
+        'This staff member does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+
+    if (updateStaffDto.roleId) {
+      const role = await this.rolesService.findOne(updateStaffDto.roleId);
+
+      if (!role)
+        throw new HttpException(
+          'This role does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+
+      staff.role = role;
+    }
+
+    staff.forename = updateStaffDto.forename || staff.forename;
+    staff.surname = updateStaffDto.surname || staff.surname;
+    staff.dob = updateStaffDto.dob || staff.dob;
+    staff.password = updateStaffDto.password || staff.password;
+    staff.emailAddress = updateStaffDto.emailAddress || staff.emailAddress;
+
+    return {
+      ...await staff.save(),
+      password: undefined
+    };
   }
 
   async remove(id: number) {
-    const staff = await this.findOne(id);
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    if(!staff)
+      throw new NotFoundException();
 
     return this.staffRepository.remove(staff);
+  }
+
+  async getCurrentUser(user) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id: user.sub
+      },
+      relations: ['role']
+    });
+
+    return {
+      ...staff,
+      password: undefined
+    };
   }
 }
