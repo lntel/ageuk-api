@@ -23,11 +23,6 @@ export class StaffController {
     return this.staffService.findAll();
   }
   
-  @Get('/profile')
-  getCurrentUser(@GetCurrentUser() user) {
-    return this.staffService.getCurrentUser(user);
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.staffService.findOne(+id);

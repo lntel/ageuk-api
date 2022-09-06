@@ -53,9 +53,19 @@ export class StaffService {
         HttpStatus.CONFLICT,
       );
 
+    const role = await this.rolesService.findOne(createStaffDto.roleId);
+
+    if(!role)
+        throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
+
     createStaffDto.password = hashSync(createStaffDto.password, 12);
 
-    return this.staffRepository.save(createStaffDto);
+    const staff = Staff.create({
+      ...createStaffDto,
+      role
+    });
+
+    return this.staffRepository.save(staff);
   }
 
   findAll() {
