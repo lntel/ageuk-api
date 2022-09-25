@@ -129,10 +129,14 @@ export class StaffService {
       staff.role = role;
     }
 
+    let { password } = updateStaffDto;
+
+    password = password ? hashSync(password, 12) : null;
+
     staff.forename = updateStaffDto.forename || staff.forename;
     staff.surname = updateStaffDto.surname || staff.surname;
     staff.dob = updateStaffDto.dob || staff.dob;
-    staff.password = updateStaffDto.password || staff.password;
+    staff.password = password || staff.password;
     staff.emailAddress = updateStaffDto.emailAddress || staff.emailAddress;
 
     return {
