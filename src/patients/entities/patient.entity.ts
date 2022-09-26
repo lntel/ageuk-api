@@ -1,4 +1,4 @@
-import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
 import { Assessment } from './assessment.entity';
 
@@ -27,9 +27,6 @@ export class Patient extends BaseEntity {
 
   @Column()
   dob: Date;
-
-  @Column({ default: 'Unknown' })
-  gpFullname: string;
 
   @Column()
   city: string;
@@ -71,6 +68,12 @@ export class Patient extends BaseEntity {
 
   @Column('text', { array: true, default: [] })
   additionalContacts: string[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @BeforeInsert()
   beforeInsert() {
