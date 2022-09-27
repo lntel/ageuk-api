@@ -17,7 +17,7 @@ export default TypeOrmModule.forRootAsync({
     username: configService.get<string>('database.username'),
     password: configService.get<string>('database.password'),
     database: configService.get<string>('database.name'),
-    entities: [`${__dirname}/../**/*.{ts,js}`],
+    entities: [`${__dirname}/../**/*.entity.{ts,js}`],
     migrations: ['src/migrations/*.ts'],
     synchronize: true,
   }),
