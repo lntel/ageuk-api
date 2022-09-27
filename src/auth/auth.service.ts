@@ -74,11 +74,11 @@ export class AuthService {
     const staff = await this.staffService.findOne(staffId);
 
     try {
-      const result = this.jwtService.verify(refreshToken, {
+      const { sub } = this.jwtService.verify(refreshToken, {
         secret: this.configService.get('jwt.refreshToken.secret')
       });
 
-      const tokens = this.getTokens(staffId, staff.emailAddress);
+      const tokens = this.getTokens(sub, staff.emailAddress);
 
       return tokens;
       
