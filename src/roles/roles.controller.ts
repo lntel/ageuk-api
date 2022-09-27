@@ -4,6 +4,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Permission } from 'src/common/decorators/permission.decorator';
 import { PermissionTypeEnum } from './types/Permissions';
+import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 
 @Controller('roles')
 @Permission(PermissionTypeEnum.MANAGE_STAFF)
@@ -11,8 +12,8 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  create(@Body(new ValidationPipe()) createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
+  create(@GetCurrentUser() staff, @Body(new ValidationPipe()) createRoleDto: CreateRoleDto) {
+    return this.rolesService.create(staff, createRoleDto);
   }
 
   @Get()
@@ -26,12 +27,12 @@ export class RolesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body(new ValidationPipe()) updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(+id, updateRoleDto);
+  update(@GetCurrentUser() staff, @Param('id') id: string, @Body(new ValidationPipe()) updateRoleDto: UpdateRoleDto) {
+    return this.rolesService.update(staff, +id, updateRoleDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
+  remove(@GetCurrentUser() staff, @Param('id') id: string) {
+    return this.rolesService.remove(staff, +id);
   }
 }

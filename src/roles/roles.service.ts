@@ -1,5 +1,14 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NotificationVerbEnum } from 'src/notifications/entities/notification.entity';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { Staff } from 'src/staff/entities/staff.entity';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -12,9 +21,11 @@ export class RolesService {
   constructor(
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @Inject(NotificationsService)
+    private readonly notificationService: NotificationsService,
   ) {}
 
-  async create(createRoleDto: CreateRoleDto) {
+  async create(staff: any, createRoleDto: CreateRoleDto) {
     const exists = await this.roleRepository.findOne({
       where: {
         name: createRoleDto.name,
@@ -22,10 +33,14 @@ export class RolesService {
     });
 
     if (exists)
-      throw new HttpException(
-        'This role already exists',
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException('This role already exists', HttpStatus.CONFLICT);
+
+    await this.notificationService.create({
+      system: false,
+      verb: NotificationVerbEnum.CREATE,
+      entityName: 'Role',
+      staffId: staff.sub,
+    });
 
     const role = this.roleRepository.create({
       name: createRoleDto.name,
@@ -43,15 +58,22 @@ export class RolesService {
     return await this.roleRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto) {
+  async update(staff: any, id: number, updateRoleDto: UpdateRoleDto) {
     const role = await this.roleRepository.findOne({
       where: {
-        id
-      }
+        id,
+      },
     });
 
-    if(!role)
+    if (!role)
       throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
+
+    await this.notificationService.create({
+      system: false,
+      verb: NotificationVerbEnum.UPDATE,
+      entityName: 'Role',
+      staffId: staff.sub,
+    });
 
     role.name = updateRoleDto.name || role.name;
     role.permissions = updateRoleDto.permissions || role.permissions;
@@ -59,7 +81,7 @@ export class RolesService {
     return await role.save();
   }
 
-  async remove(id: number) {
+  async remove(staff: any, id: number) {
     const role = await this.roleRepository.findOne({
       where: {
         id,
@@ -78,6 +100,13 @@ export class RolesService {
         'There are staff who still have this role, please rearrange their roles in-order to remove this role',
         HttpStatus.CONFLICT,
       );
+
+    await this.notificationService.create({
+      system: false,
+      verb: NotificationVerbEnum.DELETE,
+      entityName: 'Role',
+      staffId: staff.sub,
+    });
 
     return await role.remove();
   }
