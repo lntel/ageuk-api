@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Sse } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { ValidationPipe } from '@nestjs/common/pipes';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -11,6 +12,12 @@ export class NotificationsController {
   @Post()
   create(@Body(new ValidationPipe()) createNotificationDto: CreateNotificationDto) {
     return this.notificationsService.create(createNotificationDto);
+  }
+
+  @SkipThrottle()
+  @Sse('sse')
+  sse() {
+    return this.notificationsService.sse();
   }
 
   @Get()
