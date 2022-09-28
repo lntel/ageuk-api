@@ -1,5 +1,6 @@
 import { Role } from 'src/roles/entities/role.entity';
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Notification } from 'src/notifications/entities/notification.entity';
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Staff extends BaseEntity {
@@ -24,5 +25,8 @@ export class Staff extends BaseEntity {
   @ManyToOne(() => Role, role => role.staff, { eager: true })
   @JoinColumn()
   role: Role;
+
+  @OneToMany(() => Notification, notification => notification.performedBy)
+  notifications: Notification[];
 
 }

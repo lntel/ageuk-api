@@ -6,11 +6,13 @@ import AuthLoginDTO from './dto/auth.dto';
 import Tokens from './types/token';
 import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 import { StaffService } from 'src/staff/staff.service';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly staffService: StaffService) {}
 
+  @Public()
   @Post('/login')
   login(@Body(new ValidationPipe()) loginData: AuthLoginDTO): Promise<Tokens> {
     return this.authService.login(loginData);

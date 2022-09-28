@@ -5,6 +5,7 @@ import { UpdateGpDto } from './dto/update-gp.dto';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 import { Permission } from 'src/common/decorators/permission.decorator';
 import { PermissionTypeEnum } from 'src/roles/types/Permissions';
+import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 
 @Permission(PermissionTypeEnum.MANAGE_STAFF)
 @Controller('gp')
@@ -12,8 +13,8 @@ export class GpController {
   constructor(private readonly gpService: GpService) {}
   
   @Post()
-  create(@Body(new ValidationPipe()) createGpDto: CreateGpDto) {
-    return this.gpService.create(createGpDto);
+  create(@GetCurrentUser() staff, @Body(new ValidationPipe()) createGpDto: CreateGpDto) {
+    return this.gpService.create(staff, createGpDto);
   }
   
   @Get()
@@ -27,12 +28,12 @@ export class GpController {
   }
   
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGpDto: UpdateGpDto) {
-    return this.gpService.update(+id, updateGpDto);
+  update(@GetCurrentUser() staff, @Param('id') id: string, @Body() updateGpDto: UpdateGpDto) {
+    return this.gpService.update(staff, +id, updateGpDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gpService.remove(+id);
+  remove(@GetCurrentUser() staff, @Param('id') id: string) {
+    return this.gpService.remove(staff, +id);
   }
 }

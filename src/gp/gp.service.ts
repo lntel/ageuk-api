@@ -6,6 +6,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NotificationVerbEnum } from 'src/notifications/entities/notification.entity';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { PatientsService } from 'src/patients/patients.service';
 import { Repository } from 'typeorm';
 import { CreateGpDto } from './dto/create-gp.dto';
@@ -19,8 +21,17 @@ export class GpService {
     private readonly gpRepository: Repository<GP>,
     @Inject(forwardRef(() => PatientsService))
     private readonly patientService: PatientsService,
+    @Inject(NotificationsService)
+    private readonly notificationService: NotificationsService,
   ) {}
-  create(createGpDto: CreateGpDto) {
+  async create(staff: any, createGpDto: CreateGpDto) {
+    await this.notificationService.create({
+      system: false,
+      verb: NotificationVerbEnum.CREATE,
+      entityName: 'GP',
+      staffId: staff.sub,
+    });
+
     return this.gpRepository.save(createGpDto);
   }
 
@@ -39,11 +50,18 @@ export class GpService {
     return result;
   }
 
-  async update(id: number, updateGpDto: UpdateGpDto) {
+  async update(staff: any, id: number, updateGpDto: UpdateGpDto) {
     const surgery = await this.gpRepository.findOne({
       where: {
         id,
       },
+    });
+
+    await this.notificationService.create({
+      system: false,
+      verb: NotificationVerbEnum.UPDATE,
+      entityName: 'GP',
+      staffId: staff.sub,
     });
 
     surgery.surgeryName = updateGpDto.surgeryName || surgery.surgeryName;
@@ -55,7 +73,7 @@ export class GpService {
     return result;
   }
 
-  async remove(id: number) {
+  async remove(staff: any, id: number) {
     const gp = await this.findOne(id);
 
     let patients = await this.patientService.findAll();
@@ -67,6 +85,13 @@ export class GpService {
         'Some patients within the system are still assigned to this GP, please reassign them before deleting this GP surgery',
         HttpStatus.CONFLICT,
       );
+
+    await this.notificationService.create({
+      system: false,
+      verb: NotificationVerbEnum.DELETE,
+      entityName: 'GP',
+      staffId: staff.sub,
+    });
 
     return await gp.remove();
   }
