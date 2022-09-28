@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { concatMap, delay, from, interval, map, Observable, of, switchMap } from 'rxjs';
+import { concatMap, interval, map } from 'rxjs';
 import { StaffService } from 'src/staff/staff.service';
 import { Repository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -83,27 +83,11 @@ export class NotificationsService {
   }
 
   async sse() {
-
-    const result = await this.notificationRepository.find({
-      relations: ['performedBy'],
-      select: {
-        id: true,
-        message: true,
-        createdAt: true,
-        entityName: true,
-        performedBy: {
-          forename: true,
-          surname: true
-        },
-        system: true,
-        verb: true
-      }
-    });
-
-    return from(result).pipe(
-      map(res => ({ data: res })),
-      delay(2000)
+    return interval(2000).pipe(
+      concatMap(() => this.findAll()),
+      map(r => ({ data: r }))
     );
+
   }
 
   findOne(id: number) {
