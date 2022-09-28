@@ -1,4 +1,11 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StaffService } from 'src/staff/staff.service';
 import { Repository } from 'typeorm';
@@ -8,7 +15,6 @@ import { Notification } from './entities/notification.entity';
 
 @Injectable()
 export class NotificationsService {
-
   private readonly logger = new Logger(NotificationsService.name);
 
   constructor(
@@ -19,24 +25,29 @@ export class NotificationsService {
   ) {}
 
   async create(createNotificationDto: CreateNotificationDto) {
-
     const notification = Notification.create({
       verb: createNotificationDto.verb,
       entityName: createNotificationDto.entityName,
       system: createNotificationDto.system,
-      message: createNotificationDto.message
+      message: createNotificationDto.message,
     });
 
-    if(createNotificationDto.system) {
-      if(!createNotificationDto.message)
-        throw new HttpException('System notifications must contain a message', HttpStatus.BAD_REQUEST);
-        
+    if (createNotificationDto.system) {
+      if (!createNotificationDto.message)
+        throw new HttpException(
+          'System notifications must contain a message',
+          HttpStatus.BAD_REQUEST,
+        );
+
       notification.verb = null;
       notification.entityName = null;
-    } 
+    }
 
-    if(createNotificationDto.staffId && !createNotificationDto.system) {
-      const staff = await this.staffService.findOneBy('id', createNotificationDto.staffId);
+    if (createNotificationDto.staffId && !createNotificationDto.system) {
+      const staff = await this.staffService.findOneBy(
+        'id',
+        createNotificationDto.staffId,
+      );
 
       notification.performedBy = staff;
     }
