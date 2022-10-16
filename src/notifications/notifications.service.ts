@@ -35,6 +35,9 @@ export class NotificationsService {
       where: {
         staff: user.sub,
       },
+      order: {
+        createdAt: 'DESC'
+      }
     });
 
     return notifications;
