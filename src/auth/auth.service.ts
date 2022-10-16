@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { StaffService } from 'src/staff/staff.service';
 import AuthLoginDTO from './dto/auth.dto';
 import Tokens from './types/token';
@@ -12,6 +13,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private staffService: StaffService,
+    private notificationService: NotificationsService,
   ) {}
 
   async getTokens(staffId: number, emailAddress: string) {
@@ -61,6 +63,11 @@ export class AuthService {
 
     if(!passwordsMatch)
         throw new HttpException('You have entered invalid credentials, please try again', HttpStatus.UNAUTHORIZED);
+
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your account has been accessed'
+    });
 
     const tokens = this.getTokens(staff.id, emailAddress);
 
