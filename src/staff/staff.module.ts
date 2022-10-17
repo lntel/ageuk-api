@@ -3,12 +3,13 @@ import { StaffService } from './staff.service';
 import { StaffController } from './staff.controller';
 import { Staff } from './entities/staff.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
-import { AuthModule } from 'src/auth/auth.module';
+import { RolesModule } from 'src/roles/roles.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Staff]),
-    forwardRef(() => AuthModule)
+    forwardRef(() => RolesModule),
+    forwardRef(() => NotificationsModule),
   ],
   controllers: [StaffController],
   providers: [StaffService],

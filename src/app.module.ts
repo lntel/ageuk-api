@@ -9,11 +9,15 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { GP } from './gp/entities/gp.entity';
 import { GpModule } from './gp/gp.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { AppController } from './app.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
+import { AuthModule } from './auth/auth.module';
+import { RolesModule } from './roles/roles.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import ormConfig from './config/typeorm.config';
+import rateLimitConfig from './config/rateLimit.config';
 
 @Module({
   imports: [
@@ -24,33 +28,14 @@ import { TasksModule } from './tasks/tasks.module';
     }),
     ScheduleModule.forRoot(),
     TasksModule,
-    ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        ttl: configService.get<number>('rateLimit.ttl'),
-        limit: configService.get<number>('rateLimit.limit'),
-      }),
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('database.host'),
-        port: configService.get<number>('database.port'),
-        username: configService.get<string>('database.username'),
-        password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.name'),
-        entities: [Staff, Patient, GP],
-        migrations: ['src/migrations/**/*.ts'],
-        synchronize: true,
-      }),
-    }),
+    rateLimitConfig,
+    ormConfig,
     StaffModule,
     PatientsModule,
     GpModule,
     AuthModule,
+    RolesModule,
+    NotificationsModule,
   ],
   controllers: [
     AppController

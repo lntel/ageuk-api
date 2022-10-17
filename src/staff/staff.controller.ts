@@ -1,17 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Response } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
-import { AuthService } from 'src/auth/auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { Permission } from 'src/common/decorators/permission.decorator';
+import { PermissionTypeEnum } from 'src/roles/types/Permissions';
+import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 
-@ApiTags('staff')
 @Controller('staff')
+@Permission(PermissionTypeEnum.MANAGE_STAFF)
 export class StaffController {
   constructor(
     private readonly staffService: StaffService,
-    private readonly authService: AuthService,
   ) {}
 
   @Post()
@@ -19,17 +18,11 @@ export class StaffController {
     return this.staffService.create(createStaffDto);
   }
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  login(@Request() req) {
-    return this.authService.login(req.user);
-  }
-
   @Get()
   findAll() {
     return this.staffService.findAll();
   }
-
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.staffService.findOne(+id);
@@ -41,7 +34,8 @@ export class StaffController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.staffService.remove(+id);
+  remove(@GetCurrentUser() user, @Param('id') id: string) {
+    return this.staffService.remove(user, +id);
   }
+
 }

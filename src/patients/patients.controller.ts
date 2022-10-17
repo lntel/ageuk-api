@@ -5,7 +5,9 @@ import { UpdatePatientDto } from './dto/update-patient.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('patients')
+import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 @Controller('patients')
+@UseGuards(AccessTokenGuard)
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
@@ -18,7 +20,7 @@ export class PatientsController {
   findAll() {
     return this.patientsService.findAll();
   }
-
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.patientsService.findOne(id);

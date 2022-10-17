@@ -1,4 +1,4 @@
-import { IsString, IsDateString, MinLength, IsEmail } from 'class-validator';
+import { IsString, IsDateString, MinLength, IsEmail, IsDefined, IsInt, IsEnum } from 'class-validator';
 
 export class CreateStaffDto {
   @IsString()
@@ -15,4 +15,11 @@ export class CreateStaffDto {
 
   @IsEmail()
   emailAddress: string;
+
+  @IsDefined({
+    message: 'You must select a role for the staff member'
+  })
+  @IsInt()
+  roleId: number;
+
 }

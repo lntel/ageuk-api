@@ -1,5 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
+import { Assessment } from './assessment.entity';
 
 @Entity()
 export class Patient extends BaseEntity {
@@ -27,9 +28,6 @@ export class Patient extends BaseEntity {
   @Column()
   dob: Date;
 
-  @Column({ default: 'Unknown' })
-  gpFullname: string;
-
   @Column()
   city: string;
 
@@ -51,11 +49,45 @@ export class Patient extends BaseEntity {
 
   @Column('text', { array: true })
   diagnoses: string[];
-
+  
   @ManyToOne(() => GP, (gp) => gp.patients)
   @JoinTable()
   generalPractioner: GP;
 
+  @OneToOne(() => Assessment, assessment => assessment.patient, { cascade: true })
+  assessment: Assessment;
+  
   @Column()
-  referral: string;
+  referredBy: string;
+  
+  @Column()
+  nokDetails: string;
+  
+  @Column({ nullable: true })
+  firstPointOfContact: string;
+
+  @Column('text', { array: true, default: [] })
+  additionalContacts: string[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.sixWeekReview = this.generateReviewDate(6);
+    this.eightWeekReview = this.generateReviewDate(8);
+  }
+
+  public generateReviewDate(weeks: number) {
+    // https://stackoverflow.com/a/19691491
+    const result = new Date();
+
+    result.setDate(result.getDate() + (weeks * 7));
+
+    return result;
+  }
+
 }
