@@ -12,7 +12,11 @@ async function bootstrap() {
   .setTitle('AgeUK API')
   .setDescription('This documents AgeUK\'s care API')
   .setVersion('1.0')
-  .addTag('test')
+  .addTag('auth')
+  .addBearerAuth({
+    type: 'http',
+    bearerFormat: 'Bearer token'
+  })
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
