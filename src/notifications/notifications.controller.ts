@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common/decorators';
-import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
-import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { GetCurrentUser } from '../common/decorators/get-user.decorator';
+import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { NotificationsService } from './notifications.service';
@@ -27,8 +27,8 @@ export class NotificationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  update(@Param('id') id: string) {
+    return this.notificationsService.update(+id);
   }
 
   @Delete(':id')

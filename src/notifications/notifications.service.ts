@@ -4,10 +4,9 @@ import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { InjectRepository } from '@nestjs/typeorm';
-import { StaffService } from 'src/staff/staff.service';
 import { Repository } from 'typeorm';
+import { StaffService } from '../staff/staff.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Notification } from './entities/notification.entity';
 
 @Injectable()
@@ -43,11 +42,12 @@ export class NotificationsService {
     return notifications;
   }
 
+  // TODO implement and test this
   findOne(id: number) {
     return `This action returns a #${id} notification`;
   }
 
-  async update(id: number, updateNotificationDto: UpdateNotificationDto) {
+  async update(id: number) {
     const notification = await this.notificationRepository.findOneBy({
       id: String(id),
     });
