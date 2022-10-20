@@ -21,18 +21,18 @@ export class NotificationsController {
     return this.notificationsService.findAll(user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.notificationsService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string) {
     return this.notificationsService.update(+id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationsService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.notificationsService.remove(+id);
+  // }
 }

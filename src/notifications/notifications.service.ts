@@ -43,9 +43,9 @@ export class NotificationsService {
   }
 
   // TODO implement and test this
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
-  }
+  // findOne(id: number) {
+  //   return `This action returns a #${id} notification`;
+  // }
 
   async update(id: number) {
     const notification = await this.notificationRepository.findOneBy({
@@ -63,7 +63,7 @@ export class NotificationsService {
     return notification.save();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} notification`;
+  // }
 }
