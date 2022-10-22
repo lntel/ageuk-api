@@ -3,12 +3,11 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
+  Logger
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotificationVerbEnum } from 'src/notifications/entities/notification.entity';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { Staff } from 'src/staff/entities/staff.entity';
+import { NotificationVerbEnum } from '../notifications/entities/notification.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';

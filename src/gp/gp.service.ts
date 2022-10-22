@@ -6,9 +6,9 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotificationVerbEnum } from 'src/notifications/entities/notification.entity';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { PatientsService } from 'src/patients/patients.service';
+import { NotificationVerbEnum } from '../notifications/entities/notification.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { PatientsService } from '../patients/patients.service';
 import { Repository } from 'typeorm';
 import { CreateGpDto } from './dto/create-gp.dto';
 import { UpdateGpDto } from './dto/update-gp.dto';
@@ -50,6 +50,7 @@ export class GpService {
     return result;
   }
 
+  // TODO add existence check
   async update(staff: any, id: number, updateGpDto: UpdateGpDto) {
     const surgery = await this.gpRepository.findOne({
       where: {

@@ -1,4 +1,4 @@
-import { Staff } from "src/staff/entities/staff.entity";
+import { Staff } from "../../staff/entities/staff.entity";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PermissionTypeEnum } from "../types/Permissions";
 

@@ -1,11 +1,11 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Request, Res } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { compareSync, hashSync } from 'bcrypt';
+import { RolesService } from '../roles/roles.service';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
-import { compareSync, hashSync } from 'bcrypt';
-import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class StaffService {
