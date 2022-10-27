@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { concatMap, interval, map } from 'rxjs';
-import { StaffService } from 'src/staff/staff.service';
+import { StaffService } from '../staff/staff.service';
 import { Repository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';

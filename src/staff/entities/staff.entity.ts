@@ -1,5 +1,5 @@
-import { Role } from 'src/roles/entities/role.entity';
-import { Notification } from 'src/notifications/entities/notification.entity';
+import { Role } from '../../roles/entities/role.entity';
+import { Notification } from '../../notifications/entities/notification.entity';
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
