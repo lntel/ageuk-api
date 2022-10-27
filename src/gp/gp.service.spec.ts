@@ -145,21 +145,7 @@ describe('GpService', () => {
       });
     });
 
-    // it('should update the gp object', async () => {
+    // TODO test if nested save function was called
 
-    //   const spy = jest.spyOn(entity, 'findOne');
-
-    //   // await service.update({}, 1, updateDto);
-
-    //   console.log(spy.mock)
-
-    //     expect(entity.findOne).toStrictEqual({
-    //       id: 1,
-    //       surgeryName: 'new Test surgery',
-    //       address: 'new test address',
-    //       phoneNumber: '07859 746888',
-    //       save: jest.fn()
-    //     })
-    // });
   });
 });
