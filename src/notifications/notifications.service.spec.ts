@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -21,9 +21,12 @@ describe('NotificationsService', () => {
               save: jest.fn(),
             }),
             save: jest.fn(),
-            find: jest.fn(),
+            find: jest.fn().mockReturnValue({
+              filter: jest.fn()
+            }),
             findOneBy: jest.fn().mockReturnValue({
               save: jest.fn(),
+              remove: jest.fn(),
               read: false,
             }),
           },
@@ -32,6 +35,7 @@ describe('NotificationsService', () => {
           provide: StaffService,
           useValue: {
             findOne: jest.fn(),
+            findOneBy: jest.fn()
           },
         },
       ],
@@ -65,33 +69,60 @@ describe('NotificationsService', () => {
   });
 
   describe('findAll', () => {
-    it('should call the find method on the repository', async () => {
-      const user = {
-        sub: 1,
-      };
+    const user = {
+      sub: 1,
+    };
 
+    it('should call the find method on the repository', async () => {
       await service.findAll(user);
 
       expect(entity.find).toHaveBeenCalledWith({
-        where: {
-          staff: user.sub,
-        },
         order: {
           createdAt: 'DESC',
         },
       });
     });
+
+    it('should call the filter method on the notifications object', async () => {
+
+      await service.findAll(user);
+
+      expect((await entity.find()).filter).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('update', () => {
+
+    const id = 1;
+
     it('should call the findOneBy method on the notification repository', async () => {
-      const id = 1;
 
       await service.update(id);
-
+      
       expect(entity.findOneBy).toHaveBeenCalledWith({
         id: String(id),
       });
+    });
+    
+    it('should throw an exception if notification does not exist', async () => {
+      
+      (entity.findOneBy as jest.Mock).mockReturnValueOnce(undefined);
+      
+      expect(async () => {
+        await service.update(1);
+      }).rejects.toThrow(HttpException);
+    });
+    
+    it('should throw an exception if the read property is null', async () => {
+      (entity.findOneBy as jest.Mock).mockReturnValueOnce({
+        save: jest.fn(),
+        read: null,
+      });
+      
+      expect(async () => {
+        await service.update(1);
+      }).rejects.toThrow(HttpException);
+
     });
 
     it('notification read should be false', async () => {
@@ -133,5 +164,27 @@ describe('NotificationsService', () => {
 
       expect(result.save).toHaveBeenCalled();
     });
+  });
+
+  describe('remove', () => {
+
+    const id = 1;
+
+    it('should call the findOneBy method on the repository', async () => {
+      
+      await service.remove(id);
+
+      expect(entity.findOneBy).toHaveBeenCalledWith({
+        id: String(id)
+      });
+    });
+    
+    it('should call the remove method on the returned object', async () => {
+      
+      await service.remove(id);
+
+      expect(jest.spyOn(entity, 'findOneBy').mock.calls[0]).toHaveBeenCalled();
+    });
+
   });
 });
