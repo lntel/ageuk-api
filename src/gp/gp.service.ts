@@ -39,6 +39,7 @@ export class GpService {
     return result;
   }
 
+  // TODO add existence check
   async update(staff: any, id: number, updateGpDto: UpdateGpDto) {
     const surgery = await this.gpRepository.findOne({
       where: {
