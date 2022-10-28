@@ -181,9 +181,17 @@ describe('NotificationsService', () => {
     
     it('should call the remove method on the returned object', async () => {
       
+      const removeMock = jest.fn();
+
+      (entity.findOneBy as jest.Mock).mockReturnValueOnce({
+        save: jest.fn(),
+        remove: removeMock,
+        read: false,
+      })
+
       await service.remove(id);
 
-      expect(jest.spyOn(entity, 'findOneBy').mock.calls[0]).toHaveBeenCalled();
+      expect(removeMock).toHaveBeenCalled();
     });
 
   });
