@@ -83,11 +83,32 @@ describe('NotificationsService', () => {
       });
     });
 
-    it('should call the filter method on the notifications object', async () => {
+    it('find method should return filter method', async () => {
 
+      const filter = jest.fn();
+
+      (entity.find as jest.Mock).mockReturnValueOnce({
+        filter
+      });
+      
       await service.findAll(user);
 
-      expect((await entity.find()).filter).toHaveBeenCalledTimes(1);
+      expect(entity.find).toHaveReturnedWith({
+        filter
+      });
+    });
+    
+    it('filter method should be called with anonymous filter function', async () => {
+
+      const filter = jest.fn();
+
+      (entity.find as jest.Mock).mockReturnValueOnce({
+        filter
+      });
+      
+      await service.findAll(user);
+
+      expect(filter).toHaveBeenCalled();
     });
   });
 
