@@ -10,8 +10,10 @@ export class Notification extends BaseEntity {
     @Column()
     content: string;
 
+    // Read receipts are disabled on system notifications
     @Column({
-        default: false
+        default: false,
+        nullable: true
     })
     read: boolean;
     
@@ -21,6 +23,8 @@ export class Notification extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Staff, staff => staff.notifications)
+    @ManyToOne(() => Staff, staff => staff.notifications, {
+        nullable: true
+    })
     staff: Staff;
 }

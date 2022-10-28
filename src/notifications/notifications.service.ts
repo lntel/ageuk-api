@@ -18,26 +18,32 @@ export class NotificationsService {
     private readonly staffService: StaffService,
   ) {}
 
+  // await this.staffService.findOne(createNotificationDto.staff)
   @UsePipes(new ValidationPipe())
   async create(createNotificationDto: CreateNotificationDto) {
     const notification = this.notificationRepository.create({
       content: createNotificationDto.content,
-      staff: await this.staffService.findOne(createNotificationDto.staff),
+      read: !createNotificationDto.staff ? null : false
     });
 
+    if(createNotificationDto.staff)
+      notification.staff = await this.staffService.findOneBy('id', String(createNotificationDto.staff));
+    
     return await notification.save();
   }
 
   // TODO find a way to use or on the same field
   async findAll(user: any) {
-    const notifications = await this.notificationRepository.find({
-      where: {
-        staff: user.sub,
-      },
+    let notifications = await this.notificationRepository.find({
       order: {
-        createdAt: 'DESC'
-      }
+        createdAt: 'DESC',
+      },
     });
+
+    // ! This is a workaround since OR is not available with this kind of typeorm query
+    notifications = notifications.filter(
+      (notification) => notification.staff === user.sub || !notification.staff,
+    );
 
     return notifications;
   }
@@ -52,6 +58,18 @@ export class NotificationsService {
       id: String(id),
     });
 
+    if (!notification)
+      throw new HttpException(
+        'This notification does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+
+    if (notification.read === null)
+      throw new HttpException(
+        'Read receipts are disabled on this notification',
+        HttpStatus.BAD_REQUEST,
+      );
+
     if (notification.read)
       throw new HttpException(
         'This notification has already been marked as read',
@@ -63,7 +81,11 @@ export class NotificationsService {
     return notification.save();
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} notification`;
-  // }
+  async remove(id: number) {
+    const notification = await this.notificationRepository.findOneBy({
+      id: String(id)
+    });
+
+    notification.remove();
+  }
 }
