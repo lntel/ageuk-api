@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseG
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Permission } from 'src/common/decorators/permission.decorator';
+import { Permission } from '../common/decorators/permission.decorator';
 import { PermissionTypeEnum } from './types/Permissions';
-import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
+import { GetCurrentUser } from '../common/decorators/get-user.decorator';
 
 @Controller('roles')
 @Permission(PermissionTypeEnum.MANAGE_STAFF)
