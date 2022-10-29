@@ -1,11 +1,11 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Request } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { compareSync, hashSync } from 'bcrypt';
+import { RolesService } from '../roles/roles.service';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
-import { compareSync, hashSync } from 'bcrypt';
-import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class StaffService {
@@ -145,12 +145,18 @@ export class StaffService {
     };
   }
 
-  async remove(id: number) {
+  async remove(user: any, id: number) {
     const staff = await this.staffRepository.findOne({
       where: {
         id
       }
     });
+
+    // Prevent the staff from deleting their own account
+    const { sub } = user;
+
+    if(sub === staff.id)
+      throw new HttpException("You cannot delete your own account", HttpStatus.CONFLICT)
 
     if(!staff)
       throw new NotFoundException();

@@ -34,8 +34,8 @@ export class StaffController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.staffService.remove(+id);
+  remove(@GetCurrentUser() user, @Param('id') id: string) {
+    return this.staffService.remove(user, +id);
   }
 
 }

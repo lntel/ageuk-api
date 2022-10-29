@@ -20,7 +20,7 @@ export class GpService {
     @Inject(forwardRef(() => PatientsService))
     private readonly patientService: PatientsService,
   ) {}
-  create(createGpDto: CreateGpDto) {
+  async create(staff: any, createGpDto: CreateGpDto) {
     return this.gpRepository.save(createGpDto);
   }
 
@@ -39,7 +39,8 @@ export class GpService {
     return result;
   }
 
-  async update(id: number, updateGpDto: UpdateGpDto) {
+  // TODO add existence check
+  async update(staff: any, id: number, updateGpDto: UpdateGpDto) {
     const surgery = await this.gpRepository.findOne({
       where: {
         id,
@@ -55,7 +56,7 @@ export class GpService {
     return result;
   }
 
-  async remove(id: number) {
+  async remove(staff: any, id: number) {
     const gp = await this.findOne(id);
 
     let patients = await this.patientService.findAll();

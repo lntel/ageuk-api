@@ -1,5 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Staff } from 'src/staff/entities/staff.entity';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -14,7 +21,7 @@ export class RolesService {
     private readonly roleRepository: Repository<Role>,
   ) {}
 
-  async create(createRoleDto: CreateRoleDto) {
+  async create(staff: any, createRoleDto: CreateRoleDto) {
     const exists = await this.roleRepository.findOne({
       where: {
         name: createRoleDto.name,
@@ -22,10 +29,7 @@ export class RolesService {
     });
 
     if (exists)
-      throw new HttpException(
-        'This role already exists',
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException('This role already exists', HttpStatus.CONFLICT);
 
     const role = this.roleRepository.create({
       name: createRoleDto.name,
@@ -43,14 +47,14 @@ export class RolesService {
     return await this.roleRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto) {
+  async update(staff: any, id: number, updateRoleDto: UpdateRoleDto) {
     const role = await this.roleRepository.findOne({
       where: {
-        id
-      }
+        id,
+      },
     });
 
-    if(!role)
+    if (!role)
       throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
 
     role.name = updateRoleDto.name || role.name;
@@ -59,7 +63,7 @@ export class RolesService {
     return await role.save();
   }
 
-  async remove(id: number) {
+  async remove(staff: any, id: number) {
     const role = await this.roleRepository.findOne({
       where: {
         id,

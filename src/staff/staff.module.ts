@@ -7,7 +7,7 @@ import { RolesModule } from 'src/roles/roles.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Staff]),
-    forwardRef(() => RolesModule)
+    forwardRef(() => RolesModule),
   ],
   controllers: [StaffController],
   providers: [StaffService],
