@@ -1,23 +1,19 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Staff } from './staff/entities/staff.entity';
-import { StaffModule } from './staff/staff.module';
-import { PatientsModule } from './patients/patients.module';
-import { Patient } from './patients/entities/patient.entity';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { GP } from './gp/entities/gp.entity';
-import { GpModule } from './gp/gp.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration from './config/configuration';
-import { AppController } from './app.controller';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TasksModule } from './tasks/tasks.module';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { RolesModule } from './roles/roles.module';
-import { NotificationsModule } from './notifications/notifications.module';
-import ormConfig from './config/typeorm.config';
+import configuration from './config/configuration';
 import rateLimitConfig from './config/rateLimit.config';
+import ormConfig from './config/typeorm.config';
+import { GpModule } from './gp/gp.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PatientsModule } from './patients/patients.module';
+import { RolesModule } from './roles/roles.module';
+import { StaffModule } from './staff/staff.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [

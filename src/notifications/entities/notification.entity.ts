@@ -1,49 +1,30 @@
-import { Staff } from '../../staff/entities/staff.entity';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-
-export enum NotificationVerbEnum {
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-}
+import { Staff } from "../../staff/entities/staff.entity";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Notification extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: string;
 
-  @Column({
-    type: 'enum',
-    enum: NotificationVerbEnum,
-    nullable: true,
-  })
-  verb?: NotificationVerbEnum;
+    @PrimaryGeneratedColumn()
+    id: string;
 
-  @Column({
-    nullable: true,
-  })
-  entityName?: string;
+    @Column()
+    content: string;
 
-  @Column({
-    nullable: true,
-  })
-  message?: string;
+    // Read receipts are disabled on system notifications
+    @Column({
+        default: false,
+        nullable: true
+    })
+    read: boolean;
+    
+    @CreateDateColumn()
+    createdAt: Date;
 
-  @ManyToOne(() => Staff, (staff) => staff.notifications, {
-    nullable: true
-  })
-  performedBy?: Staff;
+    @UpdateDateColumn()
+    updatedAt: Date;
 
-  @Column({ default: false })
-  system: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
+    @ManyToOne(() => Staff, staff => staff.notifications, {
+        nullable: true
+    })
+    staff: Staff;
 }

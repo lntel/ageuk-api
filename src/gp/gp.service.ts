@@ -6,9 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotificationVerbEnum } from '../notifications/entities/notification.entity';
-import { NotificationsService } from '../notifications/notifications.service';
-import { PatientsService } from '../patients/patients.service';
+import { PatientsService } from 'src/patients/patients.service';
 import { Repository } from 'typeorm';
 import { CreateGpDto } from './dto/create-gp.dto';
 import { UpdateGpDto } from './dto/update-gp.dto';
@@ -21,17 +19,8 @@ export class GpService {
     private readonly gpRepository: Repository<GP>,
     @Inject(forwardRef(() => PatientsService))
     private readonly patientService: PatientsService,
-    @Inject(NotificationsService)
-    private readonly notificationService: NotificationsService,
   ) {}
   async create(staff: any, createGpDto: CreateGpDto) {
-    await this.notificationService.create({
-      system: false,
-      verb: NotificationVerbEnum.CREATE,
-      entityName: 'GP',
-      staffId: staff.sub,
-    });
-
     return this.gpRepository.save(createGpDto);
   }
 
@@ -58,13 +47,6 @@ export class GpService {
       },
     });
 
-    await this.notificationService.create({
-      system: false,
-      verb: NotificationVerbEnum.UPDATE,
-      entityName: 'GP',
-      staffId: staff.sub,
-    });
-
     surgery.surgeryName = updateGpDto.surgeryName || surgery.surgeryName;
     surgery.phoneNumber = updateGpDto.phoneNumber || surgery.phoneNumber;
     surgery.address = updateGpDto.address || surgery.address;
@@ -86,13 +68,6 @@ export class GpService {
         'Some patients within the system are still assigned to this GP, please reassign them before deleting this GP surgery',
         HttpStatus.CONFLICT,
       );
-
-    await this.notificationService.create({
-      system: false,
-      verb: NotificationVerbEnum.DELETE,
-      entityName: 'GP',
-      staffId: staff.sub,
-    });
 
     return await gp.remove();
   }

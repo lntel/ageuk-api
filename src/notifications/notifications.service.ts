@@ -1,104 +1,91 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { UsePipes } from '@nestjs/common/decorators';
+import { HttpStatus } from '@nestjs/common/enums';
+import { HttpException } from '@nestjs/common/exceptions';
+import { ValidationPipe } from '@nestjs/common/pipes';
 import { InjectRepository } from '@nestjs/typeorm';
-import { concatMap, interval, map } from 'rxjs';
-import { StaffService } from '../staff/staff.service';
 import { Repository } from 'typeorm';
+import { StaffService } from '../staff/staff.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Notification } from './entities/notification.entity';
 
 @Injectable()
 export class NotificationsService {
-  private readonly logger = new Logger(NotificationsService.name);
-
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
-    @Inject(forwardRef(() => StaffService))
+    @Inject(StaffService)
     private readonly staffService: StaffService,
   ) {}
 
+  // await this.staffService.findOne(createNotificationDto.staff)
+  @UsePipes(new ValidationPipe())
   async create(createNotificationDto: CreateNotificationDto) {
-    const notification = Notification.create({
-      verb: createNotificationDto.verb,
-      entityName: createNotificationDto.entityName,
-      system: createNotificationDto.system,
-      message: createNotificationDto.message,
+    const notification = this.notificationRepository.create({
+      content: createNotificationDto.content,
+      read: !createNotificationDto.staff ? null : false
     });
 
-    if (createNotificationDto.system) {
-      if (!createNotificationDto.message)
-        throw new HttpException(
-          'System notifications must contain a message',
-          HttpStatus.BAD_REQUEST,
-        );
-
-      notification.verb = null;
-      notification.entityName = null;
-    }
-
-    if (createNotificationDto.staffId && !createNotificationDto.system) {
-      const staff = await this.staffService.findOneBy(
-        'id',
-        createNotificationDto.staffId,
-      );
-
-      notification.performedBy = staff;
-    }
-
-    const result = await notification.save();
-
-    // Protecting personal data from request
-    result.performedBy = undefined;
-
-    return result;
+    if(createNotificationDto.staff)
+      notification.staff = await this.staffService.findOneBy('id', String(createNotificationDto.staff));
+    
+    return await notification.save();
   }
 
-  async findAll() {
-    // Not sure if theres a better way to do this
+  // TODO find a way to use or on the same field
+  async findAll(user: any) {
     let notifications = await this.notificationRepository.find({
-      relations: ['performedBy'],
-      select: {
-        id: true,
-        entityName: true,
-        message: true,
-        system: true,
-        verb: true,
-        performedBy: {
-          forename: true,
-          surname: true,
-        },
-        createdAt: true
-      }
+      order: {
+        createdAt: 'DESC',
+      },
     });
+
+    // ! This is a workaround since OR is not available with this kind of typeorm query
+    notifications = notifications.filter(
+      (notification) => notification.staff === user.sub || !notification.staff,
+    );
 
     return notifications;
   }
 
-  async sse() {
-    return interval(2000).pipe(
-      concatMap(() => this.findAll()),
-      map(r => ({ data: r }))
-    );
+  // TODO implement and test this
+  // findOne(id: number) {
+  //   return `This action returns a #${id} notification`;
+  // }
 
+  async update(id: number) {
+    const notification = await this.notificationRepository.findOneBy({
+      id: String(id),
+    });
+
+    if (!notification)
+      throw new HttpException(
+        'This notification does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+
+    if (notification.read === null)
+      throw new HttpException(
+        'Read receipts are disabled on this notification',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if (notification.read)
+      throw new HttpException(
+        'This notification has already been marked as read',
+        HttpStatus.FORBIDDEN,
+      );
+
+    notification.read = true;
+
+    return notification.save();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
-  }
+  async remove(id: number) {
+    const notification = await this.notificationRepository.findOneBy({
+      id: String(id)
+    });
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+    notification.remove();
   }
 }
