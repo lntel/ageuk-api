@@ -1,17 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { compareSync, hashSync } from 'bcrypt';
+import { RolesService } from '../roles/roles.service';
 import { Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
-import { LoginStaffDto } from './dto/login-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
-import { compareSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class StaffService {
   constructor(
     @InjectRepository(Staff)
     private readonly staffRepository: Repository<Staff>,
+    @Inject(forwardRef(() => RolesService))
+    private readonly rolesService: RolesService,
   ) {}
 
   async isEmailInUse(emailAddress: string) {
@@ -22,28 +24,27 @@ export class StaffService {
     });
   }
 
-  // TODO move this to the auth service
-  // async login(loginStaffDto: LoginStaffDto) {
-  //   const staff = await this.staffRepository.findOneBy({
-  //     emailAddress: loginStaffDto.emailAddress,
-  //   });
+  async login(emailAddress: string, password: string) {
+    const staff = await this.staffRepository.findOneBy({
+      emailAddress,
+    });
 
-  //   if (!staff)
-  //     throw new HttpException(
-  //       'This email address does not exist',
-  //       HttpStatus.NOT_FOUND,
-  //     );
+    if (!staff)
+      return new HttpException(
+        'This email address does not exist',
+        HttpStatus.NOT_FOUND,
+      );
 
-  //   const result = compareSync(loginStaffDto.password, staff.password);
+    const result = compareSync(password, staff.password);
 
-  //   if (!result)
-  //     throw new HttpException(
-  //       'You have provided an incorrect password, try again',
-  //       HttpStatus.UNAUTHORIZED,
-  //     );
+    if (!result)
+      return new HttpException(
+        'You have provided an incorrect password, try again',
+        HttpStatus.UNAUTHORIZED,
+      );
 
-  //   return 'Successfully signed in, please wait';
-  // }
+    return staff;
+  }
 
   async create(createStaffDto: CreateStaffDto) {
     if (await this.isEmailInUse(createStaffDto.emailAddress))
@@ -52,13 +53,25 @@ export class StaffService {
         HttpStatus.CONFLICT,
       );
 
+    const role = await this.rolesService.findOne(createStaffDto.roleId);
+
+    if(!role)
+        throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
+
     createStaffDto.password = hashSync(createStaffDto.password, 12);
 
-    return this.staffRepository.save(createStaffDto);
+    const staff = Staff.create({
+      ...createStaffDto,
+      role
+    });
+
+    return this.staffRepository.save(staff);
   }
 
   findAll() {
-    return this.staffRepository.find({});
+    return this.staffRepository.find({
+      select: ['dob', 'emailAddress', 'forename', 'id', 'surname'],
+    });
   }
 
   async findOne(id: number) {
@@ -71,7 +84,10 @@ export class StaffService {
     if (!staff)
       throw new HttpException('Staff member not found', HttpStatus.NOT_FOUND);
 
-    return staff;
+    return {
+      ...staff,
+      password: undefined
+    };
   }
 
   async findOneBy(key: string, value: string) {
@@ -79,6 +95,7 @@ export class StaffService {
       where: {
         [key]: value,
       },
+      relations: ['role']
     });
 
     if (!staff)
@@ -87,13 +104,77 @@ export class StaffService {
     return staff;
   }
 
-  update(id: number, updateStaffDto: UpdateStaffDto) {
-    return `This action updates a #${id} staff`;
+  async update(id: number, updateStaffDto: UpdateStaffDto) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!staff)
+      throw new HttpException(
+        'This staff member does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+
+    if (updateStaffDto.roleId) {
+      const role = await this.rolesService.findOne(updateStaffDto.roleId);
+
+      if (!role)
+        throw new HttpException(
+          'This role does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+
+      staff.role = role;
+    }
+
+    let { password } = updateStaffDto;
+
+    password = password ? hashSync(password, 12) : null;
+
+    staff.forename = updateStaffDto.forename || staff.forename;
+    staff.surname = updateStaffDto.surname || staff.surname;
+    staff.dob = updateStaffDto.dob || staff.dob;
+    staff.password = password || staff.password;
+    staff.emailAddress = updateStaffDto.emailAddress || staff.emailAddress;
+
+    return {
+      ...await staff.save(),
+      password: undefined
+    };
   }
 
-  async remove(id: number) {
-    const staff = await this.findOne(id);
+  async remove(user: any, id: number) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    // Prevent the staff from deleting their own account
+    const { sub } = user;
+
+    if(sub === staff.id)
+      throw new HttpException("You cannot delete your own account", HttpStatus.CONFLICT)
+
+    if(!staff)
+      throw new NotFoundException();
 
     return this.staffRepository.remove(staff);
+  }
+
+  async getCurrentUser(user) {
+    const staff = await this.staffRepository.findOne({
+      where: {
+        id: user.sub
+      },
+      relations: ['role']
+    });
+
+    return {
+      ...staff,
+      password: undefined
+    };
   }
 }

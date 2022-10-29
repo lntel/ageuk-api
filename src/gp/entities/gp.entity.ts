@@ -18,6 +18,9 @@ export class GP extends BaseEntity {
   @Column()
   surgeryName: string;
 
+  @Column()
+  address: string;
+
   @OneToMany(() => Patient, (patient) => patient.generalPractioner)
   patients: Patient[];
 }

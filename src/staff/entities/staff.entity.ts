@@ -1,7 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Notification } from '../../notifications/entities/notification.entity';
+import { Role } from '../../roles/entities/role.entity';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Staff {
+export class Staff extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,4 +21,12 @@ export class Staff {
 
   @Column()
   emailAddress: string;
+
+  @ManyToOne(() => Role, role => role.staff, { eager: true })
+  @JoinColumn()
+  role: Role;
+
+  @OneToMany(() => Notification, notification => notification.staff)
+  notifications: Notification[];
+
 }
