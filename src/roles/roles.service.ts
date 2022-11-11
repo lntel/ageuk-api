@@ -1,12 +1,9 @@
 import {
   HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
+  HttpStatus, Injectable,
   Logger
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Staff } from 'src/staff/entities/staff.entity';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
