@@ -6,7 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PatientsService } from 'src/patients/patients.service';
+import { PatientsService } from '../patients/patients.service';
 import { Repository } from 'typeorm';
 import { CreateGpDto } from './dto/create-gp.dto';
 import { UpdateGpDto } from './dto/update-gp.dto';
