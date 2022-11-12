@@ -30,7 +30,7 @@ export class StaffService {
     });
 
     if (!staff)
-      return new HttpException(
+      throw new HttpException(
         'This email address does not exist',
         HttpStatus.NOT_FOUND,
       );
@@ -38,7 +38,7 @@ export class StaffService {
     const result = compareSync(password, staff.password);
 
     if (!result)
-      return new HttpException(
+      throw new HttpException(
         'You have provided an incorrect password, try again',
         HttpStatus.UNAUTHORIZED,
       );
