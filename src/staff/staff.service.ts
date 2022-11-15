@@ -60,7 +60,7 @@ export class StaffService {
 
     createStaffDto.password = hashSync(createStaffDto.password, 12);
 
-    const staff = Staff.create({
+    const staff = this.staffRepository.create({
       ...createStaffDto,
       role
     });
