@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common/decorators';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Sse, UseGuards } from '@nestjs/common/decorators';
+import { SkipThrottle } from '@nestjs/throttler';
 import { GetCurrentUser } from '../common/decorators/get-user.decorator';
 import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { NotificationsService } from './notifications.service';
 
 @UseGuards(AccessTokenGuard)
@@ -19,6 +19,12 @@ export class NotificationsController {
   @Get()
   findAll(@GetCurrentUser() user: any) {
     return this.notificationsService.findAll(user);
+  }
+
+  @SkipThrottle()
+  @Sse('sse')
+  sse(@GetCurrentUser() user: any) {
+    return this.notificationsService.sse(user);
   }
 
   // @Get(':id')
