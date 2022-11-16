@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseG
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { Permission } from 'src/common/decorators/permission.decorator';
-import { PermissionTypeEnum } from 'src/roles/types/Permissions';
-import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
+import { Permission } from '../common/decorators/permission.decorator';
+import { PermissionTypeEnum } from '../roles/types/Permissions';
+import { GetCurrentUser } from '../common/decorators/get-user.decorator';
 
 @Controller('staff')
 @Permission(PermissionTypeEnum.MANAGE_STAFF)
