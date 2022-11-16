@@ -30,7 +30,7 @@ export class StaffService {
     });
 
     if (!staff)
-      return new HttpException(
+      throw new HttpException(
         'This email address does not exist',
         HttpStatus.NOT_FOUND,
       );
@@ -38,7 +38,7 @@ export class StaffService {
     const result = compareSync(password, staff.password);
 
     if (!result)
-      return new HttpException(
+      throw new HttpException(
         'You have provided an incorrect password, try again',
         HttpStatus.UNAUTHORIZED,
       );
@@ -60,7 +60,7 @@ export class StaffService {
 
     createStaffDto.password = hashSync(createStaffDto.password, 12);
 
-    const staff = Staff.create({
+    const staff = this.staffRepository.create({
       ...createStaffDto,
       role
     });
@@ -155,11 +155,12 @@ export class StaffService {
     // Prevent the staff from deleting their own account
     const { sub } = user;
 
+    if(!staff)
+      throw new NotFoundException();
+
     if(sub === staff.id)
       throw new HttpException("You cannot delete your own account", HttpStatus.CONFLICT)
 
-    if(!staff)
-      throw new NotFoundException();
 
     return this.staffRepository.remove(staff);
   }
@@ -171,6 +172,8 @@ export class StaffService {
       },
       relations: ['role']
     });
+
+    // TODO maybe add an existence check here
 
     return {
       ...staff,
