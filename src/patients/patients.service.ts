@@ -4,16 +4,16 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
+  Logger
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GpService } from '../gp/gp.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { Repository } from 'typeorm';
+import { GpService } from '../gp/gp.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { Assessment } from './entities/assessment.entity';
 import { Patient } from './entities/patient.entity';
-import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class PatientsService {
