@@ -155,11 +155,12 @@ export class StaffService {
     // Prevent the staff from deleting their own account
     const { sub } = user;
 
+    if(!staff)
+      throw new NotFoundException();
+
     if(sub === staff.id)
       throw new HttpException("You cannot delete your own account", HttpStatus.CONFLICT)
 
-    if(!staff)
-      throw new NotFoundException();
 
     return this.staffRepository.remove(staff);
   }
@@ -171,6 +172,8 @@ export class StaffService {
       },
       relations: ['role']
     });
+
+    // TODO maybe add an existence check here
 
     return {
       ...staff,
