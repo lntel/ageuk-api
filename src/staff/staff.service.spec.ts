@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { RemoveOptions, Repository, SaveOptions } from 'typeorm';
 import { RolesService } from '../roles/roles.service';
 import { Staff } from './entities/staff.entity';
 import { StaffService } from './staff.service';
 import * as bcrypt from 'bcrypt';
-import { HttpException } from '@nestjs/common';
+import { HttpException, NotFoundException } from '@nestjs/common';
 import { CreateStaffDto } from './dto/create-staff.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 
 describe('StaffController', () => {
   let service: StaffService;
@@ -31,6 +32,7 @@ describe('StaffController', () => {
             find: jest.fn(),
             findOne: jest.fn(),
             findOneBy: jest.fn(),
+            remove: jest.fn(),
           },
         },
       ],
@@ -264,6 +266,183 @@ describe('StaffController', () => {
       const result = await service.findOneBy(key, value);
 
       expect(result).toStrictEqual(mockStaff);
+    });
+  });
+
+  describe('update', () => {
+
+    const mockId = 1;
+    const mockStaff = {
+      id: 1,
+      dob: new Date(),
+      emailAddress: 'test@test.com',
+      forename: 'test',
+      surname: 'test',
+      password: 'testing',
+      save: jest.fn()
+    }
+
+    const mockRole = {
+      id: 2,
+      name: 'test role'
+    }
+
+    const mockUpdateDto: UpdateStaffDto = {
+      password: 'some new password',
+      roleId: 2
+    };
+
+    beforeEach(async () => {
+      (rolesService.findOne as jest.Mock).mockReturnValue(mockRole);
+    });
+    
+    it('should call the findOne method on the staff repository', async () => {
+      (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
+      
+      await service.update(mockId, mockUpdateDto);
+      
+      expect(entity.findOne).toHaveBeenCalledWith({
+        where: {
+          id: mockId
+        }
+      });
+    });
+    
+    it('should throw an exception if the staff does not exist', async () => {
+      expect(async () => {
+        await service.update(mockId, mockStaff);
+      }).rejects.toThrow(HttpException);
+    });
+    
+    // it('should call the findOne method on the role service if roleId is defined', async () => {
+      //   (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
+      
+      //   await service.update(mockId, mockStaff);
+      
+      //   expect(rolesService.findOne).toHaveBeenCalledWith(mockUpdateDto.roleId);
+      // });
+      
+      it('should call the hashSync method when the password is in the update dto', async () => {
+      (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
+      
+      await service.update(mockId, mockUpdateDto);
+      
+      expect(bcrypt.hashSync).toHaveBeenCalledWith(mockUpdateDto.password, 12);
+    });
+    
+    it('should call the staff save method', async () => {
+      
+      const mockSaveFn = jest.fn();
+      
+      (entity.findOne as jest.Mock).mockReturnValueOnce({
+        ...mockStaff,
+        save: mockSaveFn
+      });
+      
+      await service.update(mockId, mockUpdateDto);
+      
+      expect(mockSaveFn).toHaveBeenCalled();
+    });
+    
+    it('should return the staff object omitting the password', async () => {
+      (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
+      
+      const result = await service.update(mockId, mockUpdateDto);
+      
+      expect(result.password).toBeUndefined();
+    });
+  });
+
+  describe('remove', () => {
+
+    const mockStaff = {
+      id: 1,
+      dob: new Date(),
+      emailAddress: 'test@test.com',
+      forename: 'test',
+      surname: 'test',
+      password: 'testing',
+      save: jest.fn()
+    }
+
+    const mockToken = {
+      sub: 2
+    };
+
+    beforeEach(() => {
+      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+    });
+    
+    it('should call the findOne method on the staff repository', async () => {
+      await service.remove(mockToken, mockStaff.id);
+      
+      expect(entity.findOne).toHaveBeenCalledWith({
+        where: {
+          id: mockStaff.id
+        }
+      });
+    });
+
+    it('should throw an exception if the staff is not found', async () => {
+      (entity.findOne as jest.Mock).mockReturnValueOnce(undefined);
+
+      expect(async () => {
+        await service.remove(mockToken, mockStaff.id);
+      }).rejects.toThrow(NotFoundException);
+    });
+    
+    it('should throw an error if the sub equals the staff id', async () => {
+      (entity.findOne as jest.Mock).mockReturnValueOnce({
+        ...mockStaff,
+        id: 2
+      });
+      
+      expect(async () => {
+        await service.remove(mockToken, mockStaff.id);
+      }).rejects.toThrow(HttpException);
+    });
+    
+    it('should call the remove method on the staff repository', async () => {
+      await service.remove(mockToken, mockStaff.id);
+      
+      expect(entity.remove).toHaveBeenCalledWith(mockStaff);
+    });
+  });
+
+  describe('getCurrentUser', () => {
+    const mockToken = {
+      sub: 1
+    };
+
+    const mockStaff = {
+      id: 1,
+      dob: new Date(),
+      emailAddress: 'test@test.com',
+      forename: 'test',
+      surname: 'test',
+      password: 'testing',
+      save: jest.fn()
+    }
+
+    beforeEach(() => {
+      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+    });
+
+    it('should call the findOne method on the staff repository', async () => {
+      await service.getCurrentUser(mockToken);
+      
+      expect(entity.findOne).toHaveBeenCalledWith({
+        where: {
+          id: mockToken.sub
+        },
+        relations: ['role']
+      });
+    });
+    
+    it('should return the staff object omitting the password field', async () => {
+      const staff = await service.getCurrentUser(mockToken);
+      
+      expect(staff.password).toBeUndefined();
     });
   });
 });
