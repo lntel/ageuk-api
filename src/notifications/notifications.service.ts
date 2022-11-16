@@ -37,8 +37,6 @@ export class NotificationsService {
   }
 
   async sse(user: any) {
-    console.log(user);
-
     return interval(2000).pipe(
       concatMap(async () => await this.findAll(user)),
       map((r) => ({ data: r })),
