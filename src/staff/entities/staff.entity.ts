@@ -1,6 +1,6 @@
 import { Notification } from '../../notifications/entities/notification.entity';
 import { Role } from '../../roles/entities/role.entity';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Staff extends BaseEntity {
@@ -28,5 +28,11 @@ export class Staff extends BaseEntity {
 
   @OneToMany(() => Notification, notification => notification.staff)
   notifications: Notification[];
+
+  @CreateDateColumn()
+  createdDate: Date;
+
+  @UpdateDateColumn()
+  lastUpdated: Date;
 
 }
