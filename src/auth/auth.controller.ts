@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, ValidationPipe, Request, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, ValidationPipe, Request, Get, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 import { RefreshTokenGuard } from 'src/common/guards/refresh-token.guard';
@@ -7,6 +7,7 @@ import Tokens from './types/token';
 import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
 import { StaffService } from 'src/staff/staff.service';
 import { Public } from './decorators/public.decorator';
+import { UpdateStaffDto } from 'src/staff/dto/update-staff.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +29,12 @@ export class AuthController {
   @Get('/profile')
   getCurrentUser(@GetCurrentUser() user) {
     return this.staffService.getCurrentUser(user);
+  }
+  
+  @UseGuards(AccessTokenGuard)
+  @Patch('/profile')
+  updateProfile(@GetCurrentUser() user, @Body(new ValidationPipe()) updateStaffDto: UpdateStaffDto) {
+    return this.staffService.update(user.sub, updateStaffDto);
   }
 
   @UseGuards(RefreshTokenGuard)

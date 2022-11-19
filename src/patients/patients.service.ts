@@ -1,7 +1,15 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GpService } from '../gp/gp.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { Repository } from 'typeorm';
+import { GpService } from '../gp/gp.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { Assessment } from './entities/assessment.entity';
@@ -16,6 +24,8 @@ export class PatientsService {
     private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Assessment)
     private readonly assessmentRepository: Repository<Assessment>,
+    @Inject(NotificationsService)
+    private readonly notificationService: NotificationsService,
     @Inject(forwardRef(() => GpService))
     private readonly gpService: GpService,
   ) {}
@@ -35,13 +45,22 @@ export class PatientsService {
         HttpStatus.CONFLICT,
       );
 
-      const { assessment: assessmentDto } = createPatientDto;
+    const { assessment: assessmentDto } = createPatientDto;
 
-    if(assessmentDto && assessmentDto.syringeDriver && !assessmentDto.syringeDriverSetupDate)
-        throw new HttpException(
-          'You must provide a syringe driver installation date',
-          HttpStatus.BAD_REQUEST
-        );
+    if (
+      assessmentDto &&
+      assessmentDto.syringeDriver &&
+      !assessmentDto.syringeDriverSetupDate
+    )
+      throw new HttpException(
+        'You must provide a syringe driver installation date',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    this.notificationService.create({
+      content: 'A new patient has been created',
+      staff: undefined,
+    });
 
     const patient = this.patientRepository.create(createPatientDto);
 
@@ -66,9 +85,9 @@ export class PatientsService {
     const patients = await this.patientRepository.find({
       where: {
         generalPractioner: {
-          id
-        }
-      }
+          id,
+        },
+      },
     });
 
     return patients;

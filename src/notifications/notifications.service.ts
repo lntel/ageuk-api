@@ -4,6 +4,7 @@ import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { InjectRepository } from '@nestjs/typeorm';
+import { concatMap, interval, map } from 'rxjs';
 import { Repository } from 'typeorm';
 import { StaffService } from '../staff/staff.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -23,13 +24,23 @@ export class NotificationsService {
   async create(createNotificationDto: CreateNotificationDto) {
     const notification = this.notificationRepository.create({
       content: createNotificationDto.content,
-      read: !createNotificationDto.staff ? null : false
+      read: !createNotificationDto.staff ? null : false,
     });
 
-    if(createNotificationDto.staff)
-      notification.staff = await this.staffService.findOneBy('id', String(createNotificationDto.staff));
-    
+    if (createNotificationDto.staff)
+      notification.staff = await this.staffService.findOneBy(
+        'id',
+        String(createNotificationDto.staff),
+      );
+
     return await notification.save();
+  }
+
+  async sse(user: any) {
+    return interval(2000).pipe(
+      concatMap(async () => await this.findAll(user)),
+      map((r) => ({ data: r })),
+    );
   }
 
   // TODO find a way to use or on the same field
@@ -42,7 +53,7 @@ export class NotificationsService {
 
     // ! This is a workaround since OR is not available with this kind of typeorm query
     notifications = notifications.filter(
-      (notification) => notification.staff === user.sub || !notification.staff,
+      (notification) => notification.staff === user.sub || !notification.staff && !notification.read,
     );
 
     return notifications;
@@ -83,7 +94,7 @@ export class NotificationsService {
 
   async remove(id: number) {
     const notification = await this.notificationRepository.findOneBy({
-      id: String(id)
+      id: String(id),
     });
 
     notification.remove();
