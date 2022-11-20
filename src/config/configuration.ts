@@ -8,6 +8,9 @@ export default () => ({
         password: process.env.DATABASE_PASS || 'root',
         name: process.env.DATABASE_NAME || 'ageuk',
     },
+    multer: {
+        location: '../uploads/images/avatars'
+    },
     jwt: {
         accessToken: {
             secret: process.env.JWT_ACCESS_SECRET || 'access_secret',
