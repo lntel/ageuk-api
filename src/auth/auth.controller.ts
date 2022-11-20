@@ -34,7 +34,7 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Patch('/profile')
   updateProfile(@GetCurrentUser() user, @Body(new ValidationPipe()) updateStaffDto: UpdateStaffDto) {
-    return this.staffService.update(user.sub, updateStaffDto);
+    return this.staffService.updateProfile(user, updateStaffDto);
   }
 
   @UseGuards(RefreshTokenGuard)
