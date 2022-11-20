@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
@@ -22,6 +24,11 @@ import { TasksModule } from './tasks/tasks.module';
       expandVariables: true,
       load: [configuration],
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../uploads'),
+      serveRoot: '/uploads/'
+    }),
+    // TODO configure multer here somehow
     ScheduleModule.forRoot(),
     TasksModule,
     rateLimitConfig,
