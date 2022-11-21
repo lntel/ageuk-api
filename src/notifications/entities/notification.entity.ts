@@ -24,7 +24,8 @@ export class Notification extends BaseEntity {
     updatedAt: Date;
 
     @ManyToOne(() => Staff, staff => staff.notifications, {
-        nullable: true
+        nullable: true,
+        onDelete: 'CASCADE'
     })
     staff: Staff;
 }

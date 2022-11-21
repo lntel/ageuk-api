@@ -8,6 +8,10 @@ import * as bcrypt from 'bcrypt';
 import { HttpException, NotFoundException } from '@nestjs/common';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { Stream } from 'stream';
+import fs, { unlinkSync } from 'fs'
+import { join } from 'path';
 
 describe('StaffController', () => {
   let service: StaffService;
@@ -18,6 +22,12 @@ describe('StaffController', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StaffService,
+        {
+          provide: NotificationsService,
+          useValue: {
+            create: jest.fn()
+          }
+        },
         {
           provide: RolesService,
           useValue: {
@@ -444,5 +454,118 @@ describe('StaffController', () => {
       
       expect(staff.password).toBeUndefined();
     });
+  });
+
+  describe('updateProfile', () => {
+    const mockToken = {
+      sub: 1
+    };
+
+    const mockStaff = {
+      id: 1,
+      dob: new Date(),
+      emailAddress: 'test@test.com',
+      forename: 'test',
+      surname: 'test',
+      password: '$2a$12$wm9CQ3gqy714IBH6AEbAK.AM1eD4JJDHhO2n5Z.ISBSHQDwHRI68C',
+      save: jest.fn()
+    }
+
+    const mockUpdateDto: UpdateStaffDto = {
+      forename: 'John',
+      surname: 'Doe',
+      password: 'test'
+    }
+
+    it('should call the findOne method on the staff repository', async () => {
+      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+      
+      const findOneBySpy = jest.spyOn(service, 'findOneBy')
+      
+      await service.updateProfile(mockToken, mockUpdateDto);
+      
+      expect(findOneBySpy).toHaveBeenCalledWith('id', mockToken.sub);
+    });
+    
+    it('should call the compareSync bcrypt method', async () => {
+      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+      
+      const spy = jest.spyOn(bcrypt, 'compareSync');
+      
+      await service.updateProfile(mockToken, mockUpdateDto);
+      
+      expect(spy).toHaveBeenCalledWith(mockUpdateDto.password, mockStaff.password);
+    });
+    
+    it('should throw an exception if the password is incorrect', async () => {
+      (entity.findOne as jest.Mock).mockReturnValue({...mockStaff, password: 'wrong password'});
+      
+      expect(async () => {
+        await service.updateProfile(mockToken, mockUpdateDto);
+      }).rejects.toThrow(HttpException);
+    });
+    
+    it('should call the update method on the service', async () => {
+      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+      
+      const spy = jest.spyOn(service, 'update');
+      
+      await service.updateProfile(mockToken, mockUpdateDto);
+
+      expect(spy).toHaveBeenCalledWith(mockToken.sub, {
+        ...mockUpdateDto,
+        password: undefined
+      });
+    });
+  });
+
+  describe('uploadAvatar', () => {
+    
+    const mockToken = {
+      sub: 1
+    };
+
+    // https://stackoverflow.com/a/73493957
+    const mockFile: Express.Multer.File = {
+      fieldname: "file",
+      originalname: "istockphoto-1346124946-170667a.jpg",
+      encoding: "7bit",
+      mimetype: "image/jpeg",
+      destination: "./uploads",
+      filename: "b1b2caa8-cf7f-4293-9bad-be29997ab2db.jpg",
+      path: "uploads\\b1b2caa8-cf7f-4293-9bad-be29997ab2db.jpg",
+      size: 78856,
+      stream: new Stream.Readable(),
+      buffer: Buffer.from('one,two,three'),
+    }
+
+    const mockStaff = {
+      id: 1,
+      dob: new Date(),
+      emailAddress: 'test@test.com',
+      forename: 'test',
+      surname: 'test',
+      avatarFilename: 'b1b2caa8-cf7f-4293-9bad-be29997ab2db.jpg',
+      password: '$2a$12$wm9CQ3gqy714IBH6AEbAK.AM1eD4JJDHhO2n5Z.ISBSHQDwHRI68C',
+      save: jest.fn()
+    }
+
+    // it('should call the findOneBy method on the service', async () => {
+    //   (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+
+    //   await service.uploadAvatar(mockStaff, mockFile);
+    // });
+    
+    // it('should call the unlink method if the staff has an avatar', async () => {
+    //   (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+    //   jest.mock('fs');
+    //   (fs.unlinkSync as jest.Mock).mockReturnValue(true);
+  
+    //   await service.uploadAvatar(mockStaff, mockFile);
+      
+    //   const spy = jest.spyOn(fs, 'unlinkSync');
+
+    //   expect(spy).toHaveBeenCalledWith(join(__dirname, '../..', 'uploads', mockStaff.avatarFilename));
+    // });
   });
 });

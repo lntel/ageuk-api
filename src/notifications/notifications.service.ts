@@ -46,6 +46,15 @@ export class NotificationsService {
   // TODO find a way to use or on the same field
   async findAll(user: any) {
     let notifications = await this.notificationRepository.find({
+      select: {
+        content: true,
+        createdAt: true,
+        id: true,
+        read: true,
+        staff: {
+          id: true,
+        }
+      },
       order: {
         createdAt: 'DESC',
       },
@@ -53,7 +62,7 @@ export class NotificationsService {
 
     // ! This is a workaround since OR is not available with this kind of typeorm query
     notifications = notifications.filter(
-      (notification) => notification.staff === user.sub || !notification.staff && !notification.read,
+      (notification) => !notification.staff && !notification.read || (notification.staff && notification.staff.id === user.sub),
     );
 
     return notifications;

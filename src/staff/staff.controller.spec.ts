@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { StaffController } from './staff.controller';
 import { StaffService } from './staff.service';
@@ -11,6 +12,10 @@ describe('StaffController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [StaffController],
       providers: [
+        {
+          provide: NotificationsService,
+          useValue: {}
+        },
         {
           provide: StaffService,
           useValue: {

@@ -1,8 +1,18 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compareSync, hashSync } from 'bcrypt';
-import { RolesService } from '../roles/roles.service';
+import { unlinkSync } from 'fs';
+import { join } from 'path';
 import { Repository } from 'typeorm';
+import { NotificationsService } from '../notifications/notifications.service';
+import { RolesService } from '../roles/roles.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
@@ -14,6 +24,8 @@ export class StaffService {
     private readonly staffRepository: Repository<Staff>,
     @Inject(forwardRef(() => RolesService))
     private readonly rolesService: RolesService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationService: NotificationsService,
   ) {}
 
   async isEmailInUse(emailAddress: string) {
@@ -55,14 +67,14 @@ export class StaffService {
 
     const role = await this.rolesService.findOne(createStaffDto.roleId);
 
-    if(!role)
-        throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
+    if (!role)
+      throw new HttpException('This role does not exist', HttpStatus.NOT_FOUND);
 
     createStaffDto.password = hashSync(createStaffDto.password, 12);
 
     const staff = this.staffRepository.create({
       ...createStaffDto,
-      role
+      role,
     });
 
     return this.staffRepository.save(staff);
@@ -86,7 +98,7 @@ export class StaffService {
 
     return {
       ...staff,
-      password: undefined
+      password: undefined,
     };
   }
 
@@ -95,7 +107,7 @@ export class StaffService {
       where: {
         [key]: value,
       },
-      relations: ['role']
+      relations: ['role'],
     });
 
     if (!staff)
@@ -127,6 +139,11 @@ export class StaffService {
         );
 
       staff.role = role;
+
+      await this.notificationService.create({
+        staff: staff.id,
+        content: `Welcome to the ${role.name} team!`,
+      });
     }
 
     let { password } = updateStaffDto;
@@ -139,44 +156,116 @@ export class StaffService {
     staff.password = password || staff.password;
     staff.emailAddress = updateStaffDto.emailAddress || staff.emailAddress;
 
+    // TODO add password reset message
+
+    if (password)
+      await this.notificationService.create({
+        staff: staff.id,
+        content: 'Your password has been updated',
+      });
+
     return {
-      ...await staff.save(),
-      password: undefined
+      ...(await staff.save()),
+      password: undefined,
     };
   }
 
   async remove(user: any, id: number) {
     const staff = await this.staffRepository.findOne({
       where: {
-        id
-      }
+        id,
+      },
     });
 
     // Prevent the staff from deleting their own account
     const { sub } = user;
 
-    if(!staff)
-      throw new NotFoundException();
+    if (!staff) throw new NotFoundException();
 
-    if(sub === staff.id)
-      throw new HttpException("You cannot delete your own account", HttpStatus.CONFLICT)
-
+    if (sub === staff.id)
+      throw new HttpException(
+        'You cannot delete your own account',
+        HttpStatus.CONFLICT,
+      );
 
     return this.staffRepository.remove(staff);
+  }
+
+  async updateProfile(user: any, updateStaffDto: UpdateStaffDto) {
+    const staff = await this.findOneBy('id', user.sub);
+
+    const result = compareSync(updateStaffDto.password, staff.password);
+
+    if (!result)
+      throw new HttpException(
+        'You have provided an incorrect password, try again',
+        HttpStatus.FORBIDDEN,
+      );
+
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your profile has been updated'
+    });
+
+    return this.update(user.sub, {
+      ...updateStaffDto,
+      password: undefined,
+    });
   }
 
   async getCurrentUser(user) {
     const staff = await this.staffRepository.findOne({
       where: {
-        id: user.sub
+        id: user.sub,
       },
-      relations: ['role']
+      relations: ['role'],
     });
 
     // TODO maybe add an existence check here
 
     return {
       ...staff,
+      password: undefined,
+    };
+  }
+
+  async uploadAvatar(user: any, file: Express.Multer.File) {
+    const staff = await this.findOneBy('id', user.sub);
+    
+    if (staff.avatarFilename)
+      unlinkSync(join(__dirname, '../..', 'uploads', staff.avatarFilename));
+    
+    staff.avatarFilename = file.filename;
+    
+    await staff.save();
+
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your profile picture has been updated'
+    });
+    
+    return file;
+  }
+  
+  async removeAvatar(user: any) {
+    const staff = await this.findOneBy('id', user.sub);
+    
+    if (!staff.avatarFilename)
+      throw new HttpException('Your profile does not have a profile image', HttpStatus.NOT_FOUND);
+      
+    unlinkSync(join(__dirname, '../..', 'uploads', staff.avatarFilename));
+    
+    staff.avatarFilename = null;
+
+    const result = await staff.save();
+
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your profile picture has been removed'
+    });
+
+    return {
+      ...result,
       password: undefined
     };
   }

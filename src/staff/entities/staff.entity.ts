@@ -35,4 +35,7 @@ export class Staff extends BaseEntity {
   @UpdateDateColumn()
   lastUpdated: Date;
 
+  @Column({ nullable: true })
+  avatarFilename: string;
+
 }

@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Response } from '@nestjs/common';
-import { StaffService } from './staff.service';
-import { CreateStaffDto } from './dto/create-staff.dto';
-import { UpdateStaffDto } from './dto/update-staff.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { SkipPermissions } from 'src/common/decorators/skipPermission.decorator';
+import { GetCurrentUser } from '../common/decorators/get-user.decorator';
 import { Permission } from '../common/decorators/permission.decorator';
 import { PermissionTypeEnum } from '../roles/types/Permissions';
-import { GetCurrentUser } from '../common/decorators/get-user.decorator';
+import { CreateStaffDto } from './dto/create-staff.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
+import { fileInterceptor } from './interceptors/file.interceptor';
+import { StaffService } from './staff.service';
 
 @Controller('staff')
 @Permission(PermissionTypeEnum.MANAGE_STAFF)
@@ -32,10 +34,24 @@ export class StaffController {
   update(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto) {
     return this.staffService.update(+id, updateStaffDto);
   }
+  
+  @SkipPermissions()
+  @Delete('/avatar')
+  removeAvatar(@GetCurrentUser() user, @Param('id') id: string) {
+    return this.staffService.removeAvatar(user);
+  }
 
   @Delete(':id')
   remove(@GetCurrentUser() user, @Param('id') id: string) {
     return this.staffService.remove(user, +id);
+  }
+
+  // https://docs.nestjs.com/techniques/file-upload
+  @SkipPermissions()
+  @UseInterceptors(fileInterceptor)
+  @Post('/avatar/upload')
+  uploadFile(@GetCurrentUser() user, @UploadedFile() file: Express.Multer.File) {
+    return this.staffService.uploadAvatar(user, file);
   }
 
 }
