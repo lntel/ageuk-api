@@ -15,6 +15,12 @@ export class PermissionGuard implements CanActivate {
     async canActivate(
         context: ExecutionContext,
     ): Promise<boolean> {
+
+        const skipPermission = this.reflector.get<boolean>("skipPermission", context.getHandler());
+
+        if(skipPermission) 
+            return true;
+            
         const permission = this.reflector.get<PermissionTypeEnum>('permission', context.getClass());
         
         const request = context.switchToHttp().getRequest();
