@@ -202,9 +202,14 @@ export class StaffService {
         HttpStatus.FORBIDDEN,
       );
 
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your profile has been updated'
+    });
+
     return this.update(user.sub, {
       ...updateStaffDto,
-      password: undefined
+      password: undefined,
     });
   }
 
@@ -226,14 +231,42 @@ export class StaffService {
 
   async uploadAvatar(user: any, file: Express.Multer.File) {
     const staff = await this.findOneBy('id', user.sub);
-
-    if(staff.avatarFilename)
+    
+    if (staff.avatarFilename)
       unlinkSync(join(__dirname, '../..', 'uploads', staff.avatarFilename));
-
+    
     staff.avatarFilename = file.filename;
-
+    
     await staff.save();
 
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your profile picture has been updated'
+    });
+    
     return file;
+  }
+  
+  async removeAvatar(user: any) {
+    const staff = await this.findOneBy('id', user.sub);
+    
+    if (!staff.avatarFilename)
+      throw new HttpException('Your profile does not have a profile image', HttpStatus.NOT_FOUND);
+      
+    unlinkSync(join(__dirname, '../..', 'uploads', staff.avatarFilename));
+    
+    staff.avatarFilename = null;
+
+    const result = await staff.save();
+
+    await this.notificationService.create({
+      staff: staff.id,
+      content: 'Your profile picture has been removed'
+    });
+
+    return {
+      ...result,
+      password: undefined
+    };
   }
 }

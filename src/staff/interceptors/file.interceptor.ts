@@ -3,7 +3,7 @@ import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
 
 // https://docs.nestjs.com/techniques/file-upload
-export const fileInterceptor = FileInterceptor('file', {
+export const fileInterceptor = FileInterceptor('avatar', {
   storage: diskStorage({
     destination: './uploads',
     filename: (req, file, cb) => {
