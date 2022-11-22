@@ -21,7 +21,7 @@ export class Notification extends BaseEntity {
     createdAt: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    lastUpdated: Date;
 
     @ManyToOne(() => Staff, staff => staff.notifications, {
         nullable: true,
