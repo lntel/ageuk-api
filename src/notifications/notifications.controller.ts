@@ -18,7 +18,7 @@ export class NotificationsController {
 
   @Get()
   findAll(@GetCurrentUser() user: any) {
-    return this.notificationsService.findAll(user);
+    return this.notificationsService.findAllFromUser(user);
   }
 
   @SkipThrottle()
