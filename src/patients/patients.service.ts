@@ -7,7 +7,7 @@ import {
   Logger
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Repository } from 'typeorm';
 import { GpService } from '../gp/gp.service';
 import { CreatePatientDto } from './dto/create-patient.dto';

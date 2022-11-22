@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
@@ -15,7 +15,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
-    @Inject(StaffService)
+    @Inject(forwardRef(() => StaffService))
     private readonly staffService: StaffService,
   ) {}
 
@@ -62,7 +62,7 @@ export class NotificationsService {
 
     // ! This is a workaround since OR is not available with this kind of typeorm query
     notifications = notifications.filter(
-      (notification) => !notification.staff && !notification.read || (notification.staff && notification.staff.id === user.sub),
+      (notification) => !notification.staff || (notification.staff && notification.staff.id === user.sub),
     );
 
     return notifications;

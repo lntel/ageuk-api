@@ -77,6 +77,15 @@ describe('NotificationsService', () => {
       await service.findAll(user);
 
       expect(entity.find).toHaveBeenCalledWith({
+        select: {
+          content: true,
+          createdAt: true,
+          id: true,
+          read: true,
+          staff: {
+            id: true,
+          }
+        },
         order: {
           createdAt: 'DESC',
         },

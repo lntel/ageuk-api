@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import { SkipPermissions } from 'src/common/decorators/skipPermission.decorator';
+import { SkipPermissions } from '../common/decorators/skipPermission.decorator';
 import { GetCurrentUser } from '../common/decorators/get-user.decorator';
 import { Permission } from '../common/decorators/permission.decorator';
 import { PermissionTypeEnum } from '../roles/types/Permissions';

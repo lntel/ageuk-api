@@ -550,11 +550,11 @@ describe('StaffController', () => {
       save: jest.fn()
     }
 
-    // it('should call the findOneBy method on the service', async () => {
-    //   (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+    it('should call the findOneBy method on the service', async () => {
+      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
 
-    //   await service.uploadAvatar(mockStaff, mockFile);
-    // });
+      await service.uploadAvatar(mockStaff, mockFile);
+    });
     
     // it('should call the unlink method if the staff has an avatar', async () => {
     //   (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
