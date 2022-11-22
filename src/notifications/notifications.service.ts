@@ -38,17 +38,18 @@ export class NotificationsService {
 
   async sse(user: any) {
     return interval(2000).pipe(
-      concatMap(async () => await this.findAll(user)),
+      concatMap(async () => await this.findAllFromUser(user)),
       map((r) => ({ data: r })),
     );
   }
 
   // TODO find a way to use or on the same field
-  async findAll(user: any) {
+  async findAllFromUser(user: any) {
     let notifications = await this.notificationRepository.find({
       select: {
         content: true,
         createdAt: true,
+        lastUpdated: true,
         id: true,
         read: true,
         staff: {
@@ -64,6 +65,12 @@ export class NotificationsService {
     notifications = notifications.filter(
       (notification) => !notification.staff || (notification.staff && notification.staff.id === user.sub),
     );
+
+    return notifications;
+  }
+
+  async findAll() {
+    const notifications = await this.notificationRepository.find({});
 
     return notifications;
   }
