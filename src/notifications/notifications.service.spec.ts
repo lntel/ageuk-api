@@ -74,7 +74,7 @@ describe('NotificationsService', () => {
     };
 
     it('should call the find method on the repository', async () => {
-      await service.findAll(user);
+      await service.findAllFromUser(user);
 
       expect(entity.find).toHaveBeenCalledWith({
         select: {
@@ -100,7 +100,7 @@ describe('NotificationsService', () => {
         filter
       });
       
-      await service.findAll(user);
+      await service.findAllFromUser(user);
 
       expect(entity.find).toHaveReturnedWith({
         filter
@@ -115,7 +115,7 @@ describe('NotificationsService', () => {
         filter
       });
       
-      await service.findAll(user);
+      await service.findAllFromUser(user);
 
       expect(filter).toHaveBeenCalled();
     });
