@@ -19,4 +19,10 @@ export class Staff {
 
   @Column()
   emailAddress: string;
+
+  @Column()
+  workPhone: string;
+
+  @Column()
+  personalPhone: string;
 }
