@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
-import { NotificationsService } from "src/notifications/notifications.service";
+import { NotificationsService } from "../notifications/notifications.service";
 
 // * https://docs.nestjs.com/techniques/task-scheduling#example
 
