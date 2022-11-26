@@ -1,7 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Notification } from '../../notifications/entities/notification.entity';
+import { Role } from '../../roles/entities/role.entity';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
-export class Staff {
+export class Staff extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,4 +27,21 @@ export class Staff {
 
   @Column()
   personalPhone: string;
+  
+  @ManyToOne(() => Role, role => role.staff, { eager: true })
+  @JoinColumn()
+  role: Role;
+
+  @OneToMany(() => Notification, notification => notification.staff)
+  notifications: Notification[];
+
+  @CreateDateColumn()
+  createdDate: Date;
+
+  @UpdateDateColumn()
+  lastUpdated: Date;
+
+  @Column({ nullable: true })
+  avatarFilename: string;
+
 }

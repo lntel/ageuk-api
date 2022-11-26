@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Staff } from './staff/entities/staff.entity';
-import { StaffModule } from './staff/staff.module';
-import { PatientsModule } from './patients/patients.module';
-import { Patient } from './patients/entities/patient.entity';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { Referral } from './patients/entities/referral.entity';
-import { GP } from './gp/entities/gp.entity';
-import { GpModule } from './gp/gp.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { join } from 'path';
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
-import { AppController } from './app.controller';
-import { ScheduleModule } from '@nestjs/schedule';
+import rateLimitConfig from './config/rateLimit.config';
+import ormConfig from './config/typeorm.config';
+import { GpModule } from './gp/gp.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PatientsModule } from './patients/patients.module';
+import { RolesModule } from './roles/roles.module';
+import { StaffModule } from './staff/staff.module';
 import { TasksModule } from './tasks/tasks.module';
 
 @Module({
@@ -23,34 +24,21 @@ import { TasksModule } from './tasks/tasks.module';
       expandVariables: true,
       load: [configuration],
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../uploads'),
+      serveRoot: '/uploads/'
+    }),
+    // TODO configure multer here somehow
     ScheduleModule.forRoot(),
     TasksModule,
-    ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        ttl: configService.get<number>('rateLimit.ttl'),
-        limit: configService.get<number>('rateLimit.limit'),
-      }),
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('database.host'),
-        port: configService.get<number>('database.port'),
-        username: configService.get<string>('database.username'),
-        password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.name'),
-        entities: [Staff, Patient, Referral, GP],
-        synchronize: true,
-      }),
-    }),
+    rateLimitConfig,
+    ormConfig,
     StaffModule,
     PatientsModule,
     GpModule,
     AuthModule,
+    RolesModule,
+    NotificationsModule,
   ],
   controllers: [
     AppController

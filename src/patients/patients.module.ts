@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common';
-import { PatientsService } from './patients.service';
-import { PatientsController } from './patients.controller';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GpModule } from 'src/gp/gp.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
+import { Assessment } from './entities/assessment.entity';
 import { Patient } from './entities/patient.entity';
-import { GP } from '../gp/entities/gp.entity';
-import { Referral } from './entities/referral.entity';
-import { GpService } from 'src/gp/gp.service';
+import { PatientsController } from './patients.controller';
+import { PatientsService } from './patients.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Patient, GP, Referral])],
+  imports: [TypeOrmModule.forFeature([Patient, Assessment]), forwardRef(() => GpModule), NotificationsModule],
   controllers: [PatientsController],
-  providers: [PatientsService, GpService],
+  providers: [PatientsService],
+  exports: [PatientsService]
 })
 export class PatientsModule {}

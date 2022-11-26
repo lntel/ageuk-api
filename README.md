@@ -1,73 +1,45 @@
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <img src="https://www.ageuk.org.uk/globalassets/age-uk/media/logos/age-uk-logo-no-strap.png">
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
+# Age UK API
 ## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is the Age UK RESTful API (Application Programming Interface) built using [NestJS](https://nestjs.com/). This API controls all of the actions of the primary application and all of its entities. 
 
 ## Installation
+Detailed below are steps required to setup and install this project.
 
-```bash
-$ npm install
+Within a command prompt or powershell within the directory of the project and run the following commands to install the dependencies: `npm install` or `yarn`
+
+## Database Connectivity
+
+The API connects to Postgres directly using NestJS's in-built [Typeorm integration](https://docs.nestjs.com/recipes/sql-typeorm). This database connection is established using database credentials extracted by the [NestJS Configuration Manager](https://docs.nestjs.com/techniques/configuration#configuration) which reads configuration values directly from the `.env` environmental variables. Since the `.env` file is included within the `.gitignore`, all of the database configuration values are kept safe.
+
+### Configuration
+
+Below is the required `.env` configuration values.
+
+```.env
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASS=root
+DATABASE_NAME=ageuk
 ```
 
-## Running the app
+The system does however, have default configuration values if the environmental variables do not exist. These default values are within the code above.
 
-```bash
-# development
-$ npm run start
+## Security
+This project uses [JWT (JSON Web Token)](https://en.wikipedia.org/wiki/JSON_Web_Token) to authorise and authenticate staff on the platform. This JWT contains the data listed below.
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```json
+{
+  emailAddress: staff.emailAddress,
+  sub: staff.id
+}
 ```
 
-## Test
+The platform uses both an access token and refresh token so that staff members are frequently authenticated to ensure that the security and integrity of the platform is maintained. Once a staff member logs into the system, they are issued both an access token and refresh token. The access token will expiry **every 15 minutes**. Once an access token expires, the refresh token will be required to gain a new access token to the system. If no refresh token is present, the system will refuse access to the staff member and request that they sign in again. The refresh token has an expiry of **1 week**.
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+### Configuration
