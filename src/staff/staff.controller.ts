@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import { SkipPermissions } from '../common/decorators/skipPermission.decorator';
 import { GetCurrentUser } from '../common/decorators/get-user.decorator';
 import { Permission } from '../common/decorators/permission.decorator';
+import { SkipPermissions } from '../common/decorators/skipPermission.decorator';
 import { PermissionTypeEnum } from '../roles/types/Permissions';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -20,6 +20,7 @@ export class StaffController {
     return this.staffService.create(createStaffDto);
   }
 
+  @SkipPermissions()
   @Get()
   findAll() {
     return this.staffService.findAll();
