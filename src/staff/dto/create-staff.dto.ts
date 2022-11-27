@@ -27,7 +27,7 @@ export class CreateStaffDto {
   @IsPhoneNumber('GB', {
     message: 'The work phone number you entered is invalid'
   })
-  workPhone: string;
+  workPhone?: string;
 
   @IsString()
   @IsPhoneNumber('GB', {
