@@ -82,7 +82,7 @@ export class StaffService {
 
   findAll() {
     return this.staffRepository.find({
-      select: ['dob', 'emailAddress', 'forename', 'id', 'surname'],
+      select: ['dob', 'emailAddress', 'forename', 'id', 'surname', 'personalPhone', 'workPhone'],
     });
   }
 
@@ -146,6 +146,15 @@ export class StaffService {
       });
     }
 
+    // TODO write unit test for this section
+    if(updateStaffDto.emailAddress) {
+
+      const emailExists = await this.isEmailInUse(updateStaffDto.emailAddress);
+
+      if(emailExists) 
+        throw new HttpException('This email is already in use, try another', HttpStatus.CONFLICT)
+    }
+
     let { password } = updateStaffDto;
 
     password = password ? hashSync(password, 12) : null;
@@ -155,6 +164,8 @@ export class StaffService {
     staff.dob = updateStaffDto.dob || staff.dob;
     staff.password = password || staff.password;
     staff.emailAddress = updateStaffDto.emailAddress || staff.emailAddress;
+    staff.personalPhone = updateStaffDto.personalPhone || staff.personalPhone;
+    staff.workPhone = updateStaffDto.workPhone || staff.workPhone;
 
     // TODO add password reset message
 
