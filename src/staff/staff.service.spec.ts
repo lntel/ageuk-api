@@ -1,17 +1,15 @@
+import { HttpException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { RemoveOptions, Repository, SaveOptions } from 'typeorm';
-import { RolesService } from '../roles/roles.service';
-import { Staff } from './entities/staff.entity';
-import { StaffService } from './staff.service';
 import * as bcrypt from 'bcrypt';
-import { HttpException, NotFoundException } from '@nestjs/common';
+import { Stream } from 'stream';
+import { Repository } from 'typeorm';
+import { NotificationsService } from '../notifications/notifications.service';
+import { RolesService } from '../roles/roles.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { NotificationsService } from '../notifications/notifications.service';
-import { Stream } from 'stream';
-import fs, { unlinkSync } from 'fs'
-import { join } from 'path';
+import { Staff } from './entities/staff.entity';
+import { StaffService } from './staff.service';
 
 describe('StaffController', () => {
   let service: StaffService;
@@ -124,6 +122,7 @@ describe('StaffController', () => {
       dob: new Date(),
       password: 'test',
       roleId: 1,
+      personalPhone: '07465839234'
     };
 
     it('should throw an exception if the email is already in use', async () => {
@@ -189,7 +188,7 @@ describe('StaffController', () => {
       await service.findAll();
 
       expect(entity.find).toHaveBeenCalledWith({
-        select: ['dob', 'emailAddress', 'forename', 'id', 'surname'],
+        select: ['dob', 'emailAddress', 'forename', 'id', 'surname', "personalPhone", "workPhone"],
       });
     });
   });
@@ -204,6 +203,7 @@ describe('StaffController', () => {
       dob: new Date(),
       password: 'test',
       roleId: 1,
+      personalPhone: '07465839234'
     };
 
     it('should call the findOne method on the staff repository', async () => {
@@ -247,6 +247,7 @@ describe('StaffController', () => {
       dob: new Date(),
       password: 'test',
       roleId: 1,
+      personalPhone: '07856172635'
     };
 
     it('should call the findOne method on the staff repository', async () => {
@@ -289,6 +290,7 @@ describe('StaffController', () => {
       forename: 'test',
       surname: 'test',
       password: 'testing',
+      personalPhone: '07586945743',
       save: jest.fn()
     }
 
@@ -298,6 +300,7 @@ describe('StaffController', () => {
     }
 
     const mockUpdateDto: UpdateStaffDto = {
+      personalPhone: '07812394990',
       password: 'some new password',
       roleId: 2
     };
@@ -331,6 +334,34 @@ describe('StaffController', () => {
       
       //   expect(rolesService.findOne).toHaveBeenCalledWith(mockUpdateDto.roleId);
       // });
+
+      it('should call the isEmailInUse method if an email is in the DTO', async () => {
+        (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
+        
+        const mockDto = {
+          ...mockUpdateDto,
+          emailAddress: 'test@test.net'
+        };
+        
+        const spy = jest.spyOn(service, 'isEmailInUse');
+        
+        await service.update(mockId, mockDto);
+        
+        expect(spy).toHaveBeenCalledWith(mockDto.emailAddress);
+      });
+      
+      it('should throw an exception if the email already exists', async () => {
+        (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
+        
+        const mockDto = {
+          ...mockUpdateDto,
+          emailAddress: 'test@test.net'
+        };
+        
+        expect(async () => {
+          await service.update(mockId, mockDto);
+        }).rejects.toThrow(HttpException);
+      });
       
       it('should call the hashSync method when the password is in the update dto', async () => {
       (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
@@ -550,11 +581,11 @@ describe('StaffController', () => {
       save: jest.fn()
     }
 
-    it('should call the findOneBy method on the service', async () => {
-      (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
+    // it('should call the findOneBy method on the service', async () => {
+    //   (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
 
-      await service.uploadAvatar(mockStaff, mockFile);
-    });
+    //   await service.uploadAvatar(mockStaff, mockFile);
+    // });
     
     // it('should call the unlink method if the staff has an avatar', async () => {
     //   (entity.findOne as jest.Mock).mockReturnValue(mockStaff);
