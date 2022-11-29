@@ -80,7 +80,8 @@ export class StaffService {
     return this.staffRepository.save(staff);
   }
 
-  findAll() {
+  async findAll() {
+
     return this.staffRepository.find({
       select: ['dob', 'emailAddress', 'forename', 'id', 'surname', 'personalPhone', 'workPhone', 'avatarFilename'],
     });
