@@ -22,6 +22,12 @@ export class Staff extends BaseEntity {
   @Column()
   emailAddress: string;
 
+  @Column({ nullable: true })
+  workPhone: string;
+
+  @Column()
+  personalPhone: string;
+
   @ManyToOne(() => Role, role => role.staff, { eager: true })
   @JoinColumn()
   role: Role;

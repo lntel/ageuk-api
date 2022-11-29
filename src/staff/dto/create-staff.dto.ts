@@ -1,4 +1,4 @@
-import { IsString, IsDateString, MinLength, IsEmail, IsDefined, IsInt, IsEnum } from 'class-validator';
+import { IsString, IsDateString, MinLength, IsEmail, IsDefined, IsInt, IsEnum, IsPhoneNumber, IsOptional } from 'class-validator';
 
 export class CreateStaffDto {
   @IsString()
@@ -21,5 +21,18 @@ export class CreateStaffDto {
   })
   @IsInt()
   roleId: number;
+
+  @IsOptional()
+  @IsString()
+  @IsPhoneNumber('GB', {
+    message: 'The work phone number you entered is invalid'
+  })
+  workPhone?: string;
+
+  @IsString()
+  @IsPhoneNumber('GB', {
+    message: 'The personal phone number you entered is invalid'
+  })
+  personalPhone: string;
 
 }

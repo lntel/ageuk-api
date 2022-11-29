@@ -46,6 +46,7 @@ describe('StaffController', () => {
         emailAddress: 'johndoe@test.com',
         password: 'some password',
         roleId: 1,
+        personalPhone: '07465839234'
       };
 
       await controller.create(createDto);
