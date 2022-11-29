@@ -188,7 +188,7 @@ describe('StaffController', () => {
       await service.findAll();
 
       expect(entity.find).toHaveBeenCalledWith({
-        select: ['dob', 'emailAddress', 'forename', 'id', 'surname', "personalPhone", "workPhone"],
+        select: ['dob', 'emailAddress', 'forename', 'id', 'surname', "personalPhone", "workPhone", "avatarFilename"],
       });
     });
   });
@@ -350,9 +350,7 @@ describe('StaffController', () => {
         expect(spy).toHaveBeenCalledWith(mockDto.emailAddress);
       });
       
-      it('should throw an exception if the email already exists', async () => {
-        (entity.findOne as jest.Mock).mockReturnValueOnce(mockStaff);
-        
+      it('should throw an exception if the email already exists', async () => {        
         const mockDto = {
           ...mockUpdateDto,
           emailAddress: 'test@test.net'

@@ -82,7 +82,7 @@ export class StaffService {
 
   findAll() {
     return this.staffRepository.find({
-      select: ['dob', 'emailAddress', 'forename', 'id', 'surname', 'personalPhone', 'workPhone'],
+      select: ['dob', 'emailAddress', 'forename', 'id', 'surname', 'personalPhone', 'workPhone', 'avatarFilename'],
     });
   }
 
@@ -147,7 +147,7 @@ export class StaffService {
     }
 
     // TODO write unit test for this section
-    if(updateStaffDto.emailAddress) {
+    if(updateStaffDto.emailAddress && updateStaffDto.emailAddress != staff.emailAddress) {
 
       const emailExists = await this.isEmailInUse(updateStaffDto.emailAddress);
 
