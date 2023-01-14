@@ -1,6 +1,7 @@
 import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
 import { Assessment } from './assessment.entity';
+import { Call } from 'src/call/entities/call.entity';
 
 @Entity()
 export class Patient extends BaseEntity {
@@ -74,6 +75,9 @@ export class Patient extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Call, call => call.patient)
+  calls: Call[];
 
   @BeforeInsert()
   beforeInsert() {
