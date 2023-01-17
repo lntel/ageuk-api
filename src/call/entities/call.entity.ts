@@ -1,6 +1,6 @@
 import { Patient } from "src/patients/entities/patient.entity";
 import { Staff } from "src/staff/entities/staff.entity";
-import { BaseEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Call extends BaseEntity {
@@ -9,12 +9,16 @@ export class Call extends BaseEntity {
     id: string;
 
     @Column()
+    date: Date;
+
+    @Column()
     time: string;
 
-    @ManyToOne(() => Patient, patient => patient.calls)
+    @ManyToOne(() => Patient, patient => patient.calls, { eager: false })
     patient: Patient;
 
-    @ManyToMany(() => Staff, staff => staff.calls)
+    @ManyToMany(() => Staff, staff => staff.calls, { eager: false })
+    @JoinTable()
     staff: Staff[];
 
 }

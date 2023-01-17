@@ -16,6 +16,7 @@ import { RolesService } from '../roles/roles.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Injectable()
 export class StaffService {
