@@ -16,6 +16,7 @@ import { PatientsModule } from './patients/patients.module';
 import { RolesModule } from './roles/roles.module';
 import { StaffModule } from './staff/staff.module';
 import { TasksModule } from './tasks/tasks.module';
+import { CallModule } from './call/call.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { TasksModule } from './tasks/tasks.module';
     AuthModule,
     RolesModule,
     NotificationsModule,
+    CallModule,
   ],
   controllers: [
     AppController
