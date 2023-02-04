@@ -1,10 +1,12 @@
-import { IsString, IsDateString, MinLength, IsEmail, IsDefined, IsInt, IsEnum, IsPhoneNumber, IsOptional } from 'class-validator';
+import { IsString, IsDateString, MinLength, IsEmail, IsDefined, IsInt, IsEnum, IsPhoneNumber, IsOptional, Length } from 'class-validator';
 
 export class CreateStaffDto {
   @IsString()
+  @Length(3, 20)
   forename: string;
-
+  
   @IsString()
+  @Length(3, 40)
   surname: string;
 
   @IsDateString()

@@ -73,6 +73,7 @@ export class CallService {
           id: true,
           firstName: true,
           surname: true,
+          postcode: true,
         },
         staff: {
           id: true,
@@ -122,6 +123,11 @@ export class CallService {
             return record;
         })
       ]);
+
+      // Check which staff are no longer in the call stafflist
+      const diffStaff = staffRecords.filter(sr => !call.staff.find(sc => sr.id === sc.id));
+
+      console.log(diffStaff)
 
       call.staff = staffRecords;
     }
