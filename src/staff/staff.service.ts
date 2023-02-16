@@ -167,7 +167,7 @@ export class StaffService {
     staff.password = password || staff.password;
     staff.emailAddress = updateStaffDto.emailAddress || staff.emailAddress;
     staff.personalPhone = updateStaffDto.personalPhone || staff.personalPhone;
-    staff.workPhone = updateStaffDto.workPhone || staff.workPhone;
+    staff.workPhone = updateStaffDto.workPhone;
 
     // TODO add password reset message
 
