@@ -82,6 +82,9 @@ export class CallService {
           avatarFilename: true,
         },
         time: true
+      },
+      order: {
+        date: 'ASC'
       }
     });
   }
