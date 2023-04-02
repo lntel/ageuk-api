@@ -1,7 +1,7 @@
 import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { GP } from '../../gp/entities/gp.entity';
 import { Assessment } from './assessment.entity';
-import { Call } from 'src/call/entities/call.entity';
+import { Call } from '../../call/entities/call.entity';
 
 @Entity()
 export class Patient extends BaseEntity {

@@ -127,6 +127,8 @@ export class PatientsService {
       patient[key] = updatePatientDto[key] || patient[key];
     });
 
+    console.log(patient)
+
     // patient.startDate = updatePatientDto.startDate || patient.startDate;
     // patient.firstName = updatePatientDto.firstName || patient.firstName;
     // patient.middleNames = updatePatientDto.middleNames || patient.middleNames;
@@ -146,8 +148,13 @@ export class PatientsService {
     // patient.firstPointOfContact = updatePatientDto.firstPointOfContact || patient.firstPointOfContact;
     // patient.additionalContacts = updatePatientDto.additionalContacts || patient.additionalContacts;
 
-    const result = await patient.save();
+    await this.notificationService.create({
+      content: `The record for ${updatePatientDto.firstName} ${updatePatientDto.surname} has been updated`,
+      staff: null
+    });
 
+    const result = await patient.save();
+    
     return result;
   }
 

@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GpModule } from 'src/gp/gp.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
+import { GpModule } from '../gp/gp.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { Assessment } from './entities/assessment.entity';
 import { Patient } from './entities/patient.entity';
 import { PatientsController } from './patients.controller';

@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateCallDto } from './dto/create-call.dto';
 import { UpdateCallDto } from './dto/update-call.dto';
-import { PatientsService } from 'src/patients/patients.service';
+import { PatientsService } from '../patients/patients.service';
 import { Call } from './entities/call.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Staff } from 'src/staff/entities/staff.entity';
+import { Staff } from '../staff/entities/staff.entity';
 import { Repository } from 'typeorm';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class CallService {

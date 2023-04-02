@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
-import { StaffModule } from 'src/staff/staff.module';
+import { StaffModule } from '../staff/staff.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './entities/notification.entity';
 

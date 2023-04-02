@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { CallService } from './call.service';
 import { CallController } from './call.controller';
-import { PatientsModule } from 'src/patients/patients.module';
+import { PatientsModule } from '../patients/patients.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Staff } from 'src/staff/entities/staff.entity';
+import { Staff } from '../staff/entities/staff.entity';
 import { Call } from './entities/call.entity';
-import { NotificationsModule } from 'src/notifications/notifications.module';
-import { StaffModule } from 'src/staff/staff.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { StaffModule } from '../staff/staff.module';
 
 @Module({
   imports: [

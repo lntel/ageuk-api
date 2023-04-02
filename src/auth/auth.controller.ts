@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
-import { GetCurrentUser } from 'src/common/decorators/get-user.decorator';
-import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
-import { RefreshTokenGuard } from 'src/common/guards/refresh-token.guard';
-import { UpdateStaffDto } from 'src/staff/dto/update-staff.dto';
-import { StaffService } from 'src/staff/staff.service';
+import { GetCurrentUser } from '../common/decorators/get-user.decorator';
+import { AccessTokenGuard } from '../common/guards/access-token.guard';
+import { RefreshTokenGuard } from '../common/guards/refresh-token.guard';
+import { UpdateStaffDto } from '../staff/dto/update-staff.dto';
+import { StaffService } from '../staff/staff.service';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import AuthLoginDTO from './dto/auth.dto';

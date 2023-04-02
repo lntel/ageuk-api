@@ -1,9 +1,5 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GP } from 'src/gp/entities/gp.entity';
-import { Patient } from 'src/patients/entities/patient.entity';
-import { Staff } from 'src/staff/entities/staff.entity';
-import { DataSource } from 'typeorm';
 
 // https://docs.nestjs.com/techniques/database#migrations
 

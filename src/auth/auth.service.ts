@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { StaffService } from 'src/staff/staff.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { StaffService } from '../staff/staff.service';
 import AuthLoginDTO from './dto/auth.dto';
 import Tokens from './types/token';
 

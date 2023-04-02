@@ -1,4 +1,4 @@
-import { Call } from 'src/call/entities/call.entity';
+import { Call } from '../../call/entities/call.entity';
 import { Notification } from '../../notifications/entities/notification.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';

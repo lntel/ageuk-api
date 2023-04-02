@@ -1,5 +1,5 @@
 import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common"
-import { PermissionTypeEnum } from "src/roles/types/Permissions";
+import { PermissionTypeEnum } from "../../roles/types/Permissions";
 import { AccessTokenGuard } from "../guards/access-token.guard";
 import { PermissionGuard } from "../guards/permission.guard";
 

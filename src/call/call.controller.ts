@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } fro
 import { CallService } from './call.service';
 import { CreateCallDto } from './dto/create-call.dto';
 import { UpdateCallDto } from './dto/update-call.dto';
-import { Permission } from 'src/common/decorators/permission.decorator';
-import { PermissionTypeEnum } from 'src/roles/types/Permissions';
+import { Permission } from '../common/decorators/permission.decorator';
+import { PermissionTypeEnum } from '../roles/types/Permissions';
 
 @Controller('call')
 @Permission(PermissionTypeEnum.MANAGE_STAFF)

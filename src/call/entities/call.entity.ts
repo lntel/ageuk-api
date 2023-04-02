@@ -1,6 +1,6 @@
-import { Patient } from "src/patients/entities/patient.entity";
-import { Staff } from "src/staff/entities/staff.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Patient } from "../../patients/entities/patient.entity";
+import { Staff } from "../../staff/entities/staff.entity";
 
 @Entity()
 export class Call extends BaseEntity {
