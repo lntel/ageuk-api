@@ -21,4 +21,16 @@ export class Call extends BaseEntity {
     @JoinTable()
     staff: Staff[];
 
+    @Column({ default: null })
+    startTime: Date;
+
+    @Column({ default: null })
+    endTime: Date;
+
+    @Column({ default: null })
+    startTravelTime: Date;
+
+    @Column({ default: null })
+    endTravelTime: Date;
+
 }

@@ -10,7 +10,6 @@ import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class CallService {
-
   constructor(
     @InjectRepository(Call)
     private readonly callRepository: Repository<Call>,
@@ -23,41 +22,41 @@ export class CallService {
   ) {}
 
   async create(createCallDto: CreateCallDto) {
-    const {
-      time,
-      patientId,
-      date,
-      staff
-    } = createCallDto;
+    const { time, patientId, date, staff } = createCallDto;
 
     // check if patient exists
     const patient = await this.patientService.findOne(String(patientId));
 
     const staffRecords = await Promise.all([
-      ...staff.map(async id => {
+      ...staff.map(async (id) => {
         const record = await this.staffRepository.findOneBy({
-          id
+          id,
         });
-  
-        if(!record)
-          throw new HttpException('This staff member does not exist', HttpStatus.NOT_FOUND);
-  
-          return record;
-      })
+
+        if (!record)
+          throw new HttpException(
+            'This staff member does not exist',
+            HttpStatus.NOT_FOUND,
+          );
+
+        return record;
+      }),
     ]);
 
-    staff.forEach(id => {
+    staff.forEach((id) => {
       this.notificationService.create({
-        content: `You have a call with ${patient.firstName} ${patient.surname} at ${time} on ${new Date(date).toLocaleDateString()}`,
-        staff: id
-      })
+        content: `You have a call with ${patient.firstName} ${
+          patient.surname
+        } at ${time} on ${new Date(date).toLocaleDateString()}`,
+        staff: id,
+      });
     });
 
     const call = Call.create({
       time,
       date,
       patient,
-      staff: staffRecords
+      staff: staffRecords,
     });
 
     return call.save();
@@ -69,6 +68,10 @@ export class CallService {
       select: {
         id: true,
         date: true,
+        startTime: true,
+        endTime: true,
+        startTravelTime: true,
+        endTravelTime: true,
         patient: {
           id: true,
           firstName: true,
@@ -81,23 +84,23 @@ export class CallService {
           surname: true,
           avatarFilename: true,
         },
-        time: true
+        time: true,
       },
       order: {
-        date: 'ASC'
-      }
+        date: 'ASC',
+      },
     });
   }
 
   async findOne(id: number) {
     const call = await this.callRepository.findOne({
       where: {
-        id: String(id)
+        id: String(id),
       },
-      relations: ['staff', 'patient']
+      relations: ['staff', 'patient'],
     });
 
-    if(!call)
+    if (!call)
       throw new HttpException('This call was not found', HttpStatus.NOT_FOUND);
 
     return call;
@@ -105,58 +108,78 @@ export class CallService {
 
   async update(id: number, updateCallDto: UpdateCallDto) {
     const call = await this.findOne(id);
-    
-    if(updateCallDto.patientId) {
+
+    if (updateCallDto.patientId) {
       // check if patient exists
-      const patient = await this.patientService.findOne(String(updateCallDto.patientId));
+      const patient = await this.patientService.findOne(
+        String(updateCallDto.patientId),
+      );
 
       call.patient = patient;
     }
 
-    if(updateCallDto.staff && updateCallDto.staff.length) {
+    if (updateCallDto.staff && updateCallDto.staff.length) {
       const staffRecords = await Promise.all([
-        ...updateCallDto.staff.map(async id => {
+        ...updateCallDto.staff.map(async (id) => {
           const record = await this.staffRepository.findOneBy({
-            id
+            id,
           });
-    
-          if(!record)
-            throw new HttpException('This staff member does not exist', HttpStatus.NOT_FOUND);
-    
-            return record;
-        })
+
+          if (!record)
+            throw new HttpException(
+              'This staff member does not exist',
+              HttpStatus.NOT_FOUND,
+            );
+
+          return record;
+        }),
       ]);
 
       // Check which staff are no longer in the call stafflist
-      const diffStaff = staffRecords.filter(sr => !call.staff.find(sc => sr.id === sc.id));
+      const diffStaff = staffRecords.filter(
+        (sr) => !call.staff.find((sc) => sr.id === sc.id),
+      );
 
-      console.log(diffStaff)
+      console.log(diffStaff);
 
       call.staff = staffRecords;
     }
 
     call.time = updateCallDto.time || call.time;
 
+    call.startTime = updateCallDto.startTime;
+    call.endTime = updateCallDto.endTime;
+    call.startTravelTime =
+      updateCallDto.startTravelTime;
+    call.endTravelTime = updateCallDto.endTravelTime;
+
     call.staff.forEach(async ({ id }) => {
       await this.notificationService.create({
-        content: `Your call for ${call.patient.firstName} ${call.patient.surname} on ${new Date(call.date).toLocaleDateString()} at ${call.time} has been modified`,
-        staff: id
+        content: `Your call for ${call.patient.firstName} ${
+          call.patient.surname
+        } on ${new Date(call.date).toLocaleDateString()} at ${
+          call.time
+        } has been modified`,
+        staff: id,
       });
     });
-    
-    return call.save();
 
+    return call.save();
   }
 
   async remove(id: number) {
     const call = await this.findOne(id);
 
-    if(call.staff.length) {
+    if (call.staff.length) {
       call.staff.forEach(async ({ id }) => {
         await this.notificationService.create({
-          content: `Your ${call.time} call on ${new Date(call.date).toLocaleDateString()} with ${call.patient.firstName} ${call.patient.surname} has been cancelled`,
-          staff: id
-        })
+          content: `Your ${call.time} call on ${new Date(
+            call.date,
+          ).toLocaleDateString()} with ${call.patient.firstName} ${
+            call.patient.surname
+          } has been cancelled`,
+          staff: id,
+        });
       });
     }
 
