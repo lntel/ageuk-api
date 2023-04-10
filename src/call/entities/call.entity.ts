@@ -8,7 +8,7 @@ export class Call extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @Column()
+    @Column({ type: 'timestamptz' })
     date: Date;
 
     @Column()
