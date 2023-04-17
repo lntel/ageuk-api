@@ -149,8 +149,7 @@ export class CallService {
 
     call.startTime = updateCallDto.startTime;
     call.endTime = updateCallDto.endTime;
-    call.startTravelTime =
-      updateCallDto.startTravelTime;
+    call.startTravelTime = updateCallDto.startTravelTime;
     call.endTravelTime = updateCallDto.endTravelTime;
 
     call.staff.forEach(async ({ id }) => {

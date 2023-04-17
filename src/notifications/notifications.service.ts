@@ -55,6 +55,11 @@ export class NotificationsService {
           id: true,
         }
       },
+      where: {
+        staff: {
+          id: user.sub
+        }
+      },
       order: {
         createdAt: 'DESC',
       },

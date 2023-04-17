@@ -4,9 +4,10 @@ import { CreateCallDto } from './dto/create-call.dto';
 import { UpdateCallDto } from './dto/update-call.dto';
 import { Permission } from '../common/decorators/permission.decorator';
 import { PermissionTypeEnum } from '../roles/types/Permissions';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('call')
-@Permission(PermissionTypeEnum.MANAGE_STAFF)
+@Permission(PermissionTypeEnum.MANAGE_PATIENTS)
 export class CallController {
   constructor(private readonly callService: CallService) {}
 
@@ -15,11 +16,13 @@ export class CallController {
     return this.callService.create(createCallDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.callService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.callService.findOne(+id);
